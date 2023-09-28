@@ -1,0 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* flex style */
+  .flex-i-center {
+    @apply flex items-center;
+  }
+  .flex-j-center {
+    @apply flex justify-center;
+  }
+  .flex-center {
+    @apply flex-i-center justify-center;
+  }
+
+  .flex-center-start {
+    @apply flex-i-center;
+  }
+  .flex-center-between {
+    @apply flex-i-center justify-between;
+  }
+
+  .flex-center-end {
+    @apply flex-i-center justify-end;
+  }
+
+  .flex-rows-between {
+    @apply flex justify-between;
+  }
+
+  .flex-column {
+    @apply flex flex-col;
+  }
+
+  .flex-col-start {
+    @apply flex-column items-start;
+  }
+
+  .flex-col-i-center {
+    @apply flex-column items-center;
+  }
+  .flex-col-j-center {
+    @apply flex-column justify-center;
+  }
+  .flex-col-center {
+    @apply flex-col-i-center justify-center;
+  }
+
+  .flex-col-between {
+    @apply flex-column justify-between;
+  }
+
+}
