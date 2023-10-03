@@ -3,8 +3,8 @@ import Container from "@/components/Layout/Container";
 const cookies = () => {
   return (
     <Container>
-      <div className='grid grid-cols-4'>
-        <div className='col-span-1 mr-10'>
+      <div className='md:grid md:grid-cols-4 sm:flex sm:flex-col'>
+        <div className='md:col-span-1 sm:col-span-full md:mr-10 mb-10'>
           {/* Side panel */}
           <h1 className='text-3xl font-semibold'>Terms & Condition</h1>
 
