@@ -3,8 +3,8 @@ import Container from "@/components/Layout/Container";
 const terms = () => {
   return (
     <Container>
-      <div className='grid grid-cols-4'>
-        <div className='col-span-1 mr-10'>
+      <div className='md:grid md:grid-cols-4 sm:flex sm:flex-col'>
+        <div className='md:col-span-1 sm:col-span-full md:mr-10 mb-10'>
           {/* Side panel */}
           <h1 className='text-3xl font-semibold'>Terms & Condition</h1>
 
@@ -12,7 +12,7 @@ const terms = () => {
             <a href='privacy'> Privacy Policy </a>
           </p>
           <p className='text-sm font-semibold my-2 px-2 py-2 rounded-md bg-blue-50'>
-            <a href='terms'> Terms and Condition</a>
+            <a href='terms'> Terms and Condition </a>
           </p>
           <p className='text-sm font-semibold my-2 px-2 py-2 rounded-md'>
             <a href='cookies'> Cookie Policy </a>
