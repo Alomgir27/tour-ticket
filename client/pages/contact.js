@@ -3,7 +3,7 @@ import BreadCrumb from "@/components/Utils/BreadCrumb";
 
 const contact = () => {
   return (
-    <div className=' flex flex-col gap-10 sm:gap-16 md:gap-32'>
+    <div className='flex flex-col gap-10 sm:gap-16 md:gap-32'>
       <Container>
         <BreadCrumb />
         <div className='grid md:grid-cols-5 sm:grid-cols-1'>

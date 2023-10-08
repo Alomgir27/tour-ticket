@@ -30,7 +30,7 @@ const EditService = (props) => {
           </Link>
         </Card.Header>
         <Card.Body>
-          <EditServiceForm service={service} />
+          <EditServiceForm />
         </Card.Body>
       </Card>
     </AdminLayout>

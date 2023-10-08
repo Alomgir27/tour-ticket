@@ -4,11 +4,12 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import servicesService from "../../../App/Services/Service/servicesService";
 import BlogService from "../../../App/Services/Blog/BlogService";
+import { useRouter } from "next/router";
 
 function CreateBlogForm() {
+  const router = useRouter();
   const [blogData, setBlogData] = useState({
     title: "",
-    thumbnail: "",
     image: "",
     tag: null,
     short_desc: "",
@@ -30,11 +31,18 @@ function CreateBlogForm() {
       image: imageFile,
     }));
   };
-  console.log("blogData", blogData);
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission here
-    BlogService.create(blogData);
+    BlogService.create(blogData)
+      .then((res) => {
+        console.log("res", res);
+        router.push("/blog");
+
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
   };
   return (
     <Form onSubmit={handleSubmit}>
@@ -93,7 +101,7 @@ function CreateBlogForm() {
       </Card.Body>
 
       <Button variant="success" type="submit" className="float-end">
-        Update
+        Submit
       </Button>
     </Form>
   );

@@ -5,6 +5,7 @@ import React from "react";
 import Link from "next/link";
 import THSort from "../TableSort/THSort";
 import BlogService from "../../../App/Services/Blog/BlogService";
+import NextImage from "../../utils/NextImage";
 
 const typeColorMap = {
   normal: "#aa9",
@@ -45,6 +46,9 @@ const TypeLabel = ({ type }) => (
 
 const BlogList = (props) => {
   const { blogList } = props;
+ 
+
+
   return (
     <Table responsive bordered hover>
       <thead className="bg-light">
@@ -57,20 +61,27 @@ const BlogList = (props) => {
           </th>
           <th>thumbnail</th>
           <th>Short Desc.</th>
+          <th>Tag</th>
           <th aria-label="Action" />
         </tr>
       </thead>
       <tbody>
         {blogList &&
-          blogList.data.data.map((item, index) => (
+          blogList?.data?.data.map((item, index) => (
             <tr key={index}>
               <td>{item.id}</td>
 
               <td>{item.title}</td>
-              <td>
-                <img className="w-25" src={item.thumbnail} alt="" />
+              <td className="flex justify-content-center">
+                <NextImage className="img-fluid h-auto rounded shadow-sm"
+                src={item.thumbnail}
+                alt="thumbnail"
+                width={40}
+                height={40}
+                />
               </td>
               <td>{item.short_desc}</td>
+              <td>{item.tag}</td>
               <td>
                 <Dropdown align="end">
                   <Dropdown.Toggle

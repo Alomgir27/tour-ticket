@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Container from "../Layout/Container";
 import CategoryCard from "../Utils/CategoryCard";
 import CategoryCardTitle from "./CategoryCardTitle";
@@ -6,41 +6,17 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import Link from "next/link";
 
-function CategoryCardContainer({ withBg, title, subtitle, products }) {
+
+function CategoryCardContainer({ withBg, title, subtitle, products, onDestinationChange }) {
+    const [showAll, setShowAll] = useState(false);
     return (
         <div className={`${withBg ? "bg-slate-100" : ""} py-16 max-xs:py-10`}>
             <Container>
                 <div className="flex flex-col gap-9 max-xs:gap-6">
-                    <CategoryCardTitle withBg={withBg} title={title} subtitle={subtitle} />
-                    <div className="xs:hidden">
-                        {/* TODO: Need to fix this (it's breaking the UI) */}
-                        {/* <Swiper
-                            slidesPerView={1.15}
-                            spaceBetween={"20"}
-                            navigation={true}
-                            modules={[Navigation]}
-                            className="mySwiper"
-                        >
-                          
-                            {false &&
-                                products?.data?.slice(0, 8).map((item, index) => (
-                                    <SwiperSlide>
-                                        <CategoryCard
-                                            key={item.internalName}
-                                            link="/details"
-                                            img={item?.images}
-                                            title={item?.title}
-                                            price={item?.price}
-                                            actual_price={item?.actual_price}
-                                            discount={item?.discount}
-                                            tags={item?.tags}
-                                        />
-                                    </SwiperSlide>
-                                ))}
-                        </Swiper> */}
-                    </div>
-                    <div className="max-xs:hidden grid grid-cols-service-cards gap-4">
-                        {products?.slice(0, 8).map((item, index) => {
+                    <CategoryCardTitle withBg={withBg} title={title} subtitle={subtitle}  onDestinationChange={onDestinationChange} />
+                    {/* show 4 */}
+                    <div className="grid grid-cols-4 gap-6 max-xs:grid-cols-1 max-xs:gap-4 grid-cols-service-cards">
+                        {products?.slice(0, showAll ? products?.length : 8).map((item, index) => {
                             const netPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].net;
                             const retailPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
                             const discount = Math.round(((retailPrice - netPrice) / retailPrice) * 100);
@@ -49,7 +25,7 @@ function CategoryCardContainer({ withBg, title, subtitle, products }) {
                                 <CategoryCard
                                     key={item.internalName}
                                     link={`/services/${item?.id}`}
-                                    img={item?.coverImageUrl ?? ""}
+                                    img={item?.coverImageUrl ? item?.coverImageUrl : item?.bannerImageUrl ? item?.bannerImageUrl : item?.galleryImages?.[0]?.url ?? ""}
                                     title={item?.title}
                                     price={retailPrice}
                                     actual_price={netPrice}
@@ -59,11 +35,35 @@ function CategoryCardContainer({ withBg, title, subtitle, products }) {
                             );
                         })}
                     </div>
+                    {/* <div className="max-w-screen-lg mx-auto max-xs:hidden">
+                        <Swiper
+                            modules={[Navigation]}
+                            slidesPerView={4}
+                            spaceBetween={10}
+                            navigation
+                            className="mySwiper"
+                        >
+                            { products?.slice(8).map((item, index) => (
+                                    <SwiperSlide>
+                                        <CategoryCard
+                                            key={item.internalName}
+                                            link="/details"
+                                            img={item?.coverImageUrl ? item?.coverImageUrl : item?.bannerImageUrl ? item?.bannerImageUrl : item?.galleryImages?.[0]?.url ?? ""}
+                                            title={item?.title}
+                                            price={item?.price}
+                                            actual_price={item?.actual_price}
+                                            discount={item?.discount}
+                                            tags={item?.tags}
+                                        />
+                                    </SwiperSlide>
+                                ))}
+                        </Swiper>
+                    </div> */}
                     <div className="flex items-center justify-center">
-                        <Link href={"/services"}>
-                            <button className="w-[200px] h-16 bg-slate-200 rounded-xl flex-col p-[5px]  gap-2.5 flex items-center justify-center">
+                        {/* <Link href={"/services"} onClick={() => setShowAll(true)}> */}
+                            <button className="w-[200px] h-16 bg-slate-200 rounded-xl flex-col p-[5px]  gap-2.5 flex items-center justify-center" onClick={() => setShowAll(!showAll) }>
                                 <div className="bg-white h-full w-full rounded-xl transition-all duration-300 hover:shadow-[0_14px_54px_0px_rgba(87,29,11,0.2)] items-center gap-2.5 flex justify-center  text-lg font-medium capitalize">
-                                    Explore all
+                                    {showAll ? "Show Less" : "Show All"}
                                     <svg
                                         width="32"
                                         height="32"
@@ -90,7 +90,7 @@ function CategoryCardContainer({ withBg, title, subtitle, products }) {
                                     </svg>
                                 </div>
                             </button>
-                        </Link>
+                        {/* </Link> */}
                     </div>
                 </div>
             </Container>

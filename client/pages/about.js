@@ -13,7 +13,7 @@ const about = () => {
           journey seamless and extraordinary.
         </p>
         <h1 className='text-2xl mb-4'>Our Mission</h1>
-        <p className='font-light mb-8'>
+        <p className='font-light mb-8 text-justify text-sm text-gray-700'>
           At Tour-Ticket, our mission is simple: to connect travelers with their
           dream destinations. We believe that travel has the power to transform
           lives, broaden horizons, and foster a deeper understanding of the

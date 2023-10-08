@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   loading: true,
-  data: undefined,
-  single: undefined,
+  data:  null,
+  single: null,
 };
 
 const whatIncludeSlicer = createSlice({

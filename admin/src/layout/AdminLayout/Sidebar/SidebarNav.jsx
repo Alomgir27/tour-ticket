@@ -143,14 +143,15 @@ export default function SidebarNav() {
       <SidebarNavItem icon={faPuzzlePiece} href="/blog">
         Manage Blog
       </SidebarNavItem>
-      {/* 
-            <SidebarNavGroup toggleIcon={faStar} toggleText="Pages">
-                <SidebarNavItem icon={faRightToBracket} href="login">
-                    Login
+      <SidebarNavItem icon={faPuzzlePiece} href="/store">
+        Manage Store
+      </SidebarNavItem>
+      
+            {/* <SidebarNavGroup toggleIcon={faStar} toggleText="Store Management">
+                <SidebarNavItem icon={faRightToBracket} href="store">
+                    Show Store
                 </SidebarNavItem>
-                <SidebarNavItem icon={faAddressCard} href="register">
-                    Register
-                </SidebarNavItem>
+                
             
             </SidebarNavGroup> */}
     </ul>

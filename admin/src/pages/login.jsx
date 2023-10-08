@@ -4,12 +4,26 @@ import { faUser } from "@fortawesome/free-regular-svg-icons";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import authService from "../../App/Services/Auth/authService";
+import { useRouter } from "next/router";
 
 const Login = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+ 
+
+  useEffect(() => {
+    const userToken = localStorage.getItem("authToken");
+    if (userToken) {
+      router.push("/dashboard");
+    } else {
+      setLoading(false);
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -19,23 +33,18 @@ const Login = () => {
     }));
   };
 
-  useEffect(() => {
-    const userToken = localStorage.getItem("authToken");
-    if (userToken) {
-      window.location.href = "/dashboard";
-    }
-  }, []);
-
   const login = async (e) => {
     e.preventDefault();
     authService.login(formData);
-    // Simulate login process (replace this with actual login logic)
-    // For demonstration purposes, using a setTimeout to simulate async behavior
-    // setTimeout(() => {
-    //   // Redirect to dashboard after successful login
-    //   router.push("/dashboard");
-    // }, 1500);
   };
+
+  if (loading) {
+    return (
+      <div className="bg-blue-500 rounded-full text-center justify-center items-center flex mx-auto my-20 w-1/2 h-1/2">
+        <div className="w-1/2 h-full bg-blue-700 animate-slide"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center dark:bg-transparent">

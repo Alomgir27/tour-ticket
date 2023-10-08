@@ -10,6 +10,9 @@ use App\Http\Controllers\API\PurchaseHistoryController;
 use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\ServiceOverviewController;
 use App\Http\Controllers\API\WhatIncludeController;
+use App\Http\Controllers\UploadController;
+use Illuminate\Http\Request;
+use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Requests\SignupRequest;
 
@@ -24,10 +27,16 @@ use App\Http\Requests\SignupRequest;
 |
 */
 
+
+Route::post('/upload', [UploadController::class, 'upload']);
+//image
+Route::get('/image', [ImageController::class, 'show']);
+
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
     Route::post('register', 'register');
     Route::post('logout', 'logout');
+    Route::post('is-user-exist', 'isUserExist');
 });
 
 Route::controller(OrderController::class)->group(
@@ -44,7 +53,7 @@ Route::controller(BlogController::class)->group(function () {
     Route::get('blog', 'index');
     Route::post('blog', 'store');
     Route::get('blog/{id}', 'show');
-    Route::patch('blog/{id}', 'update');
+    Route::post('blog/{id}', 'update');
     Route::delete('blog/{id}', 'destroy');
 });
 
@@ -52,7 +61,7 @@ Route::controller(ServiceController::class)->group(function () {
     Route::get('services', 'index');
     Route::post('services', 'store');
     Route::get('services/{id}', 'show');
-    Route::patch('services/{id}', 'update');
+    Route::post('services/{id}', 'update');
     Route::delete('services/{id}', 'destroy');
 });
 

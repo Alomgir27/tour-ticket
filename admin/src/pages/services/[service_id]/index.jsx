@@ -8,14 +8,14 @@ import servicesService from "../../../../App/Services/Service/servicesService";
 import { useRouter } from "next/router";
 
 const EditService = (props) => {
-  const service = useSelector((state) => state.services.service);
-  const router = useRouter();
+  // const service = useSelector((state) => state.services.service);
+  // const router = useRouter();
 
-  useEffect(() => {
-    if (service != "undefined" || service != null) {
-      servicesService.getSingle(router.query.service_id);
-    }
-  }, [router]);
+  // useEffect(() => {
+  //   if (service != "undefined" || service != null) {
+  //     servicesService.getSingle(router.query.service_id);
+  //   }
+  // }, [router]);
 
   return (
     <AdminLayout>
@@ -30,7 +30,7 @@ const EditService = (props) => {
           </Link>
         </Card.Header>
         <Card.Body>
-          <EditServiceForm service={service} />
+          <EditServiceForm  />
         </Card.Body>
       </Card>
     </AdminLayout>

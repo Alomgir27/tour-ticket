@@ -42,8 +42,6 @@ const blogs = () => {
                         <BlogCardsR/>
                 </div>
                 </div>
-                
-                
             </Container>
             
         </div>

@@ -11,9 +11,11 @@ const EditOverview = () => {
   const router = useRouter();
   const whatInclude = useSelector((state) => state.whatInclude.single);
   useEffect(() => {
-    if (!whatInclude) {
+  if(router.query.whatinclude_id){
+    if (!whatInclude || whatInclude.id != router.query.whatinclude_id ) {
       WhatIncludeService.single(router.query.whatinclude_id);
     }
+  }
   }, [router.query.whatinclude_id]);
   return (
     <AdminLayout>

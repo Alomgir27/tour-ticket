@@ -16,12 +16,16 @@ export const BlogRepository = {
     return res ?? null;
   },
   create: async (data) => {
+    // console.log(data);
     const res = await request({
       axiosConfig: {
         method: "POST",
         headers: {
           Accept: `application/json`,
           "Content-Type": `application/json`,
+          "Access-Control-Allow-Origin": "*", // Required for CORS support to work
+          "Access-Control-Allow-Credentials": true, // Required for cookies, authorization headers with HTTPS
+
         },
         url: `${ApiBase}/blog`,
         data,
@@ -42,16 +46,17 @@ export const BlogRepository = {
     });
     return res ?? null;
   },
-  update: async (data, id) => {
+  update: async (id, data) => {
     const res = await request({
       axiosConfig: {
-        method: "PATCH",
+        method: "POST",
         headers: {
           Accept: `application/json`,
-          "Content-Type": `application/json`,
+          "Content-Type": `multipart/form-data`,
+          "Process-Data": false,
         },
         url: `${ApiBase}/blog/${id}`,
-        data,
+        data: data,
       },
     });
     return res ?? null;

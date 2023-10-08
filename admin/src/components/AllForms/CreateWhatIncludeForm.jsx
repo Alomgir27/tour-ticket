@@ -3,8 +3,10 @@ import { Card, Col, FormLabel, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import WhatIncludeService from "../../../App/Services/WhatInclude/WhatIncludeService";
+import { useRouter } from "next/router";
 
 function CreateWhatIncludeForm() {
+  const router = useRouter();
   const [whatIncludeData, setWhatIncludeData] = useState({
     title: "",
     details: "",
@@ -21,7 +23,13 @@ function CreateWhatIncludeForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission here
-    WhatIncludeService.create(whatIncludeData);
+    WhatIncludeService.create(whatIncludeData)
+      .then((res) => {
+        router.push("/what-include");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -51,7 +59,7 @@ function CreateWhatIncludeForm() {
         </FormLabel> */}
         {/* add success btn justify end */}
         <Button variant="success" type="submit" className="float-end">
-          Update
+          Create
         </Button>
       </Form>
     </>

@@ -9,8 +9,9 @@ export const request = async ({ axiosConfig }) => {
     } else {
       notify({
         success: false,
-        message: response.response?.data?.message || "Unknown error occurred",
+        message: response?.data?.message || "Unknown error occurred",
       });
+      return response;
     }
   } catch (error) {
     notify({

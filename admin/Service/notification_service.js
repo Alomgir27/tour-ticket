@@ -1,13 +1,14 @@
 import { toast } from "react-toastify";
 
 export const notify = (data) => {
-  if (data.success === false) {
-    toast.error(data.message, {
+  console.log(data);
+  if (data?.success === false) {
+    toast.error(data?.message, {
       position: "top-right",
       autoClose: 2000,
     });
   } else {
-    toast.success(data.message, {
+    toast.success(data?.message, {
       position: "top-right",
       autoClose: 2000,
     });

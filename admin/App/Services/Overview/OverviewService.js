@@ -1,6 +1,7 @@
 import { overviewActions } from "../../../reduxStore/feature/OverviewSlicer";
 import { store } from "../../../reduxStore/store";
 import { OverviewRepository } from "../../Repositories/Overview/OverviewRepository";
+import { notify } from "../../../Service/notification_service";
 
 const OverviewService = {
   getList: async () => {
@@ -21,6 +22,7 @@ const OverviewService = {
   update: async (data, id) => {
     const res = await OverviewRepository.update(data, id);
     notify(res);
+    OverviewService.getList();
   },
   delete: async (id) => {
     const res = await OverviewRepository.delete(id);

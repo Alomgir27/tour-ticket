@@ -3,8 +3,10 @@ import { Card, Col, FormLabel, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import OverviewService from "../../../App/Services/Overview/OverviewService";
+import { useRouter } from "next/router";
 
 function CreateOverviewForm() {
+  const router = useRouter();
   const [overviewData, setOverviewData] = useState({
     title: "",
     details: "",
@@ -21,7 +23,13 @@ function CreateOverviewForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle form submission here
-    OverviewService.create(overviewData);
+    OverviewService.create(overviewData)
+      .then((res) => {
+        router.push("/overview");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -51,7 +59,7 @@ function CreateOverviewForm() {
         </FormLabel> */}
         {/* add success btn justify end */}
         <Button variant="success" type="submit" className="float-end">
-          Update
+          Submit
         </Button>
       </Form>
     </>

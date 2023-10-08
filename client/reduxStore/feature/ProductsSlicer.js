@@ -1,9 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    loading: true,
-    products: undefined,
-    error: undefined,
+    loading: false,
+    products: [],
+    error: null,
+    destinations: [],
+    selectedDestination: null,
+    localProducts: [],
 };
 
 const productsSlicer = createSlice({
@@ -18,6 +21,15 @@ const productsSlicer = createSlice({
         },
         setError: (state, action) => {
             state.error = action.payload;
+        },
+        setDestinations: (state, action) => {
+            state.destinations = action.payload;
+        },
+        setSelectedDestination: (state, action) => {
+            state.selectedDestination = action.payload;
+        },
+        setLocalProducts: (state, action) => {
+            state.localProducts = action.payload;
         },
     },
 });

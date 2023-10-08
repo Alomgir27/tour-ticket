@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Http\Controllers\API\ApiResponseController;
 use App\Models\Blog;
+use Illuminate\Support\Facades\Log;
 use Image;
 
 class BlogService
@@ -16,7 +17,7 @@ class BlogService
     public function blogList()
     {
         try {
-            $blogListCard = Blog::select('id', 'title', 'thumbnail', 'tag', 'short_desc')->paginate(4);
+            $blogListCard = Blog::select('id', 'title', 'thumbnail', 'image', 'tag', 'short_desc', 'created_at', 'details')->orderBy('id', 'desc')->paginate(10);
             return $this->apiResponses->sendResponse($blogListCard, 'Blog List Card retrieved successfully');
         } catch (\Throwable $th) {
             return $this->apiResponses->sendError($th->getMessage(), [], 500);
@@ -36,6 +37,7 @@ class BlogService
                 $image->move(public_path('assets/blog/'), $imageName);
             }
 
+            
             $blog = Blog::create([
                 'title' => $blogData['title'],
                 'details' => $blogData['details'],
@@ -44,6 +46,7 @@ class BlogService
                 'tag' => $blogData['tag'],
                 'short_desc' => $blogData['short_desc'],
             ]);
+
 
             if (!$blog) {
                 return $this->apiResponses->sendError('Blog not created', [], 500);
@@ -68,14 +71,15 @@ class BlogService
 
     public function updateBlog($blogId, $blogData)
     {
-        try {
+     try {
             $blog = Blog::findOrFail($blogId);
 
+        try {
             if ($blogData['image']) {
                 $oldImage = $blog->image;
                 $oldThumb = $blog->thumbnail;
-                unlink(public_path($oldImage));
-                unlink(public_path($oldThumb));
+                unlink(public_path() . $oldImage);
+                unlink(public_path() . $oldThumb);
                 $image = $blogData['image'];
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $img = Image::make($image->path());
@@ -83,12 +87,19 @@ class BlogService
                     $constraint->aspectRatio();
                 })->save(public_path('assets/blog/thumb/' . $imageName));
                 $image->move(public_path('assets/blog/'), $imageName);
+                $blog->update([
+                    'thumbnail' => '/assets/blog/thumb/' . $imageName,
+                    'image' => '/assets/blog/' . $imageName,
+                ]);
             }
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+        }
             $blog->update([
                 'title' => $blogData['title'],
                 'details' => $blogData['details'],
-                'thumbnail' => '/assets/blog/thumb/' . $imageName,
-                'image' => '/assets/blog/' . $imageName,
+                // 'thumbnail' => '/assets/blog/thumb/' . $imageName,
+                // 'image' => '/assets/blog/' . $imageName,
                 'tag' => $blogData['tag'],
                 'short_desc' => $blogData['short_desc'],
             ]);
@@ -109,11 +120,11 @@ class BlogService
             $blog = Blog::findOrFail($cartId);
             $oldImage = $blog->image;
             $oldThumb = $blog->thumbnail;
-            if (file_exists(public_path('assets/blog/thumb/' . $oldImage))) {
-                unlink(public_path('assets/blog/thumb/' . $oldImage));
+            if (file_exists(public_path() . $oldImage)) {
+                unlink(public_path() . $oldImage);
             }
-            if (file_exists(public_path('assets/blog/' . $oldThumb))) {
-                unlink(public_path('assets/blog/' . $oldThumb));
+            if (file_exists(public_path() . $oldThumb)) {
+                unlink(public_path() . $oldThumb);
             }
             $blog->delete();
             return $this->apiResponses->sendResponse([], 'Blog deleted successfully');

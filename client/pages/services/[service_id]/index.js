@@ -79,7 +79,7 @@ const index = ({ serviceData }) => {
     // Now you have individual variables with the corresponding values from the object.
 
     const router = useRouter();
-    const [selectedImage, setSelectedImage] = useState(galleryImages[0]?.url || "/assets/details_default_cover.jpeg");
+    const [selectedImage, setSelectedImage] = useState( "/assets/details_default_cover.jpeg");
 
     const netPrice = serviceData?.options?.[0]?.units?.[0]?.pricingFrom?.[0].net;
     const retailPrice = serviceData?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
@@ -168,7 +168,7 @@ const index = ({ serviceData }) => {
                                     </div>
                                     <div className="flex items-center gap-3">
                                         {/* TODO: Image thumbs for service details */}
-                                        {galleryImages.map((item, index) => (
+                                        {galleryImages?.map((item, index) => (
                                             <div
                                                 key={index}
                                                 className="overflow-hidden rounded-lg "
@@ -249,7 +249,7 @@ const index = ({ serviceData }) => {
                             <div className="flex flex-col gap-4 my-8">
                                 <h2 className=" text-2xl font-bold capitalize">What’s Included</h2>
                                 <div className="flex flex-col gap-4">
-                                    {inclusions.map((item, index) => (
+                                    {inclusions?.map((item, index) => (
                                         <IconList key={index} title={item} />
                                     ))}
                                 </div>

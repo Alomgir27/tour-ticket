@@ -43,4 +43,33 @@ export const serviceRepository = {
     });
     return res ?? null;
   },
+  updateService: async (id, data) => {
+    const res = await request({
+      axiosConfig: {
+        method: "POST",
+        headers: {
+          Accept: `application/json`,
+          "Content-Type": `multipart/form-data`,
+          "Process-Data": false,
+        },
+        url: `${ApiBase}/services/${id}`,
+        data: data,
+      },
+    });
+    return res ?? null;
+  },
+  deleteService: async (id) => {
+    const res = await request({
+      axiosConfig: {
+        method: "DELETE",
+        headers: {
+          Accept: `application/json`,
+          "Content-Type": `application/json`,
+        },
+        url: `${ApiBase}/services/${id}`,
+      },
+    });
+    return res ?? null;
+  },
+
 };

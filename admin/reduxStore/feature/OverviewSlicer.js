@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   loading: true,
-  overview: undefined,
-  singleOverview: undefined,
+  overview: null,
+  singleOverview: null,
 };
 
 const overviewSlicer = createSlice({

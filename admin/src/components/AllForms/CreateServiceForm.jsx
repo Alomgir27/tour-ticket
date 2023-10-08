@@ -3,8 +3,12 @@ import { Card, Col, FormLabel, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import servicesService from "../../../App/Services/Service/servicesService";
+import { useRouter } from "next/router";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function CreateServiceForm() {
+  const router = useRouter();
   const [serviceData, setServiceData] = useState({
     title: "",
     tags: "",
@@ -44,10 +48,11 @@ function CreateServiceForm() {
 
   const handleDetailsImageChange = (e) => {
     const imagesArray = [];
-
-    for (let i = 0; i < e.target.files.length; i++) {
+    for (let i = 0; i < e.target?.files?.length; i++) {
       imagesArray.push(e.target.files[i]);
     }
+
+    
     setServiceData((prevData) => ({
       ...prevData,
       detail_images: imagesArray,
@@ -55,7 +60,14 @@ function CreateServiceForm() {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    servicesService.createService(serviceData);
+    servicesService.createService(serviceData)
+    .then((res) => {  
+      console.log(res);
+      router.push("/services");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
     // Handle form submission here
   };
   return (
@@ -79,6 +91,7 @@ function CreateServiceForm() {
               name="tags"
               placeholder="Tags"
               value={serviceData.tags}
+
             />
           </Col>
           <Col>
@@ -87,6 +100,8 @@ function CreateServiceForm() {
               name="price"
               placeholder="Price"
               value={serviceData.price}
+              type="number"
+
             />
           </Col>
           <Col>
@@ -110,6 +125,7 @@ function CreateServiceForm() {
               onChange={handleInputChange}
               name={"discount"}
               placeholder="Discount %"
+              type="number"
             />
           </Col>
           <Col>
@@ -145,12 +161,30 @@ function CreateServiceForm() {
       <Card.Body className="d-flex flex-column gap-4">
         <Row>
           <Col>
-            <Form.Control
+            <DatePicker
+              selected={serviceData.tour_date}
+              onChange={(date) =>
+                setServiceData((prevData) => ({
+                  ...prevData,
+                  tour_date: date,
+                }))
+              }
+              name="tour_date"
+              placeholderText="Tour Date"
+              dateFormat="dd/MM/yyyy" // Customize the date format
+              minDate={new Date()} // Disable past date
+              isClearable
+              showYearDropdown
+              scrollableMonthYearDropdown
+              className="form-control w-100"
+            />
+            
+            {/* <Form.Control
               onChange={handleInputChange}
               name="tour_date"
               placeholder="Tour Date"
               value={serviceData.tour_date}
-            />
+            /> */}
           </Col>
           <Col>
             <Form.Control
@@ -171,12 +205,29 @@ function CreateServiceForm() {
         </Row>
         <Row>
           <Col>
-            <Form.Control
+            <DatePicker
+              selected={serviceData.opening_hours}
+              onChange={(date) =>
+                setServiceData((prevData) => ({
+                  ...prevData,
+                  opening_hours: date,
+                }))
+              }
+              name="opening_hours"
+              placeholderText="Opening Hours"
+              dateFormat="h:mm aa" // Customize the date format
+              showTimeSelect
+              showTimeSelectOnly
+              timeIntervals={15}
+              timeCaption="Time"
+              className="form-control w-100"
+            />
+            {/* <Form.Control
               onChange={handleInputChange}
               name="opening_hours"
               placeholder="Opening Hours"
               value={serviceData.opening_hours}
-            />
+            /> */}
           </Col>
           <Col>
             <Form.Control
@@ -257,7 +308,7 @@ function CreateServiceForm() {
       </Card.Body>
 
       <Button variant="success" type="submit" className="float-end">
-        Update
+        Submit
       </Button>
     </Form>
   );

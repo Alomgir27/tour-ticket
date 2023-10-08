@@ -9,11 +9,12 @@ const nextConfig = {
   },
 
   images: {
-    domains: ["img.pokemondb.net"],
+    domains: ["img.pokemondb.net", "localhost"],
+
   },
   exportPathMap: async function () {
     return {
-      "/": { page: "/login" },
+       "/": { page: "/login" },
     };
   },
 };

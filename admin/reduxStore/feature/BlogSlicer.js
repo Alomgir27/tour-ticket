@@ -2,8 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   loading: true,
-  blogList: undefined,
-  blogDetails: undefined,
+  blogList: null,
+  blogDetails: null,
+  singleBlog: null,
 };
 
 const blogSlicer = createSlice({
@@ -18,6 +19,9 @@ const blogSlicer = createSlice({
     },
     setBlogDetails: (state, action) => {
       state.blogDetails = action.payload;
+    },
+    setSingleBlog: (state, action) => {
+      state.singleBlog = action.payload;
     },
   },
 });

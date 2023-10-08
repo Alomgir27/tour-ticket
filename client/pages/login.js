@@ -1,9 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSession, signIn } from 'next-auth/react';
 import GoogleSvg from '@/components/Svg/GoogleSvg';
 import { HiArrowLongRight } from 'react-icons/hi2';
-
+import { AuthRepo } from '@/App/Repositories/Auth/AuthRepo';
+import Loading from '@/components/Utils/Loading';
 const Login = () => {
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const res = await AuthRepo.login(formData);
+    if (res.status === 200) {
+      signIn('credentials', {
+        email: formData.email,
+        password: formData.password,
+      });
+    } else {
+      setLoading(false);
+    }
+  }
+
+  if (session) {
+    return null;
+  }
+
+  if(loading) return <Loading />
 
    
   return (
@@ -15,7 +49,7 @@ const Login = () => {
          {/* Google Sign-in Button */}
          <div className="text-center mt-4">
             <button
-                onClick={() => signIn("google")}
+                onClick={() => signIn('google')}
                 className="group relative w-full flex justify-center py-2 px-4 border text-sm font-medium rounded-md text-black bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-400 hover:shadow-md transition duration-300 ease-in-out block"
             >
                <div className="flex justify-between items-center w-full">
@@ -29,7 +63,7 @@ const Login = () => {
                 </div>
             </button>
         </div>
-        <form className="mt-8 space-y-6 card-body" action="#" method="POST">
+        <form className="mt-8 space-y-6 card-body" action="#" method="POST" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm -space-y-px space-y-4">
             <div className="mb-4">
@@ -44,6 +78,7 @@ const Login = () => {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
+                onChange={handleInputChange}
               />
             </div>
             <div className="mb-4">
@@ -58,6 +93,7 @@ const Login = () => {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Password"
+                onChange={handleInputChange}
               />
             </div>
           </div>

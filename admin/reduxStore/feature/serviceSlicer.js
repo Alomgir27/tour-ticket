@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   loading: true,
-  data: undefined,
-  service: undefined,
+  data: null,
+  service: null,
 };
 
 const serviceSlicer = createSlice({

@@ -1,0 +1,49 @@
+import React from 'react';
+import 'leaflet/dist/leaflet.css';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+
+const Map = ({ stores, center, onLocationChange }) => {
+  return (
+    <MapContainer
+      center={center}
+      zoom={8}
+      style={{ height: '100vh', width: '80%' }}
+      doubleClickZoom={true}
+      whenReady={(map) => {
+        map.target.on('click', (e) => {
+            onLocationChange(e.latlng);
+        }
+        );
+      }}
+    >
+      <TileLayer
+        url={`https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}`}
+        attribution='&copy; <a href="https://www.mapbox.com/">Mapbox</a> contributors'
+        id="mapbox/streets-v11" // Replace with your Mapbox style ID
+        accessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN} // Your Mapbox access token
+        mapboxApiAccessToken={process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN}
+        mapStyle="mapbox://styles/mapbox/streets-v11"
+      />
+      {stores.map((store, index) => (
+        <Marker
+          key={index}
+          position={store.location}
+          icon={
+            new L.Icon({
+              iconUrl: 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41],
+
+            })
+          }
+        >
+          <Popup>{store.name}</Popup>
+        </Marker>
+      ))}
+    </MapContainer>
+  );
+};
+
+export default Map;

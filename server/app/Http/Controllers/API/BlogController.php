@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBlogRequest;
 use App\Http\Requests\UpdateBlogRequest;
 use App\Services\BlogService;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
@@ -27,7 +29,8 @@ class BlogController extends Controller
      */
     public function store(StoreBlogRequest $request)
     {
-        return $this->blogService->storeBlog($request->validated());
+       
+       return $this->blogService->storeBlog($request->validated());
     }
 
     /**
@@ -42,9 +45,9 @@ class BlogController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBlogRequest $request, string $id)
+    public function update(Request $request, string $id)
     {
-        return $this->blogService->updateBlog($id, $request->validated());
+        return $this->blogService->updateBlog($id, $request);
     }
 
     /**
@@ -52,6 +55,8 @@ class BlogController extends Controller
      */
     public function destroy(string $id)
     {
+        //delete blog and its image
+
         return $this->blogService->deleteBlog($id);
     }
 }

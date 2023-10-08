@@ -97,7 +97,7 @@ const ServiceList = (props) => {
                     >
                       <Dropdown.Item as="a">Edit</Dropdown.Item>
                     </Link>
-                    <Dropdown.Item className="text-danger" href="#/action-3">
+                    <Dropdown.Item className="text-danger" href="#/action-3" onClick={() => servicesService.deleteService(item.id)}>
                       Delete
                     </Dropdown.Item>
                   </Dropdown.Menu>

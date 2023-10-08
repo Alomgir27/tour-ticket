@@ -10,10 +10,11 @@ import { useRouter } from "next/router";
 const EditOverview = () => {
   const router = useRouter();
   const overview = useSelector((state) => state.overview.singleOverview);
-  console.log(router.query);
   useEffect(() => {
-    if (!overview) {
-      OverviewService.singleOverview(router.query.overview_id);
+    if(router.query.overview_id){
+      if (!overview || overview.id != router.query.overview_id ) {
+        OverviewService.singleOverview(router.query.overview_id);
+      }
     }
   }, [router.query.overview_id]);
   return (

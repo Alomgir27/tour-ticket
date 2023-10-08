@@ -7,15 +7,15 @@ const BlogService = {
   getList: async () => {
     const res = await BlogRepository.getList();
     store.dispatch(blogActions.setBlogList(res));
+    return res;
   },
   create: async (data) => {
     const blogData = new FormData();
     blogData.append("title", data.title);
-    blogData.append("description", data.tag);
     blogData.append("image", data.image);
     blogData.append("short_desc", data.short_desc);
     blogData.append("details", data.details);
-    blogData.append("tag", data.tag);
+    blogData.append("tag", data.tag);    
     const res = await BlogRepository.create(blogData);
     notify(res);
     BlogService.getList();
@@ -24,14 +24,23 @@ const BlogService = {
     const res = await BlogRepository.singleBlog(id);
     store.dispatch(blogActions.setSingleBlog(res));
   },
-  update: async (data, id) => {
-    const res = await BlogRepository.update(data, id);
+  update: async (id, data) => {
+    const blogData = new FormData();
+    blogData.append("title", data.title);
+    blogData.append("image", data.image);
+    blogData.append("short_desc", data.short_desc);
+    blogData.append("details", data.details);
+    blogData.append("tag", data.tag);
+    const res = await BlogRepository.update(id, blogData);
     BlogService.getList();
+    notify(res);
+    return res;
   },
   delete: async (id) => {
     const res = await BlogRepository.delete(id);
     notify(res);
     BlogService.getList();
+    return res;
   },
 };
 export default BlogService;

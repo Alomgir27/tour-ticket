@@ -10,6 +10,7 @@ use App\Models\ServiceExperiance;
 use App\Models\ServiceOverview;
 use App\Models\ServiceWhatIncluded;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ServicesService
 {
@@ -21,11 +22,35 @@ class ServicesService
         $this->apiResponses = $apiResponses;
     }
 
-    public function getServiceList($paginate)
+   
+    public function getServiceList($page, $search, $sort, $price, $tags, $date, $duration)
     {
-        $getServiceList = Service::paginate($paginate);
+        $paginate = 20;
 
-        return $this->apiResponses->sendResponse($getServiceList, 'Service list retrieved successfully');
+        $query = Service::query();
+
+        // if($search){
+        //     $query->where('title', 'LIKE', "%{$search}%");
+        // }
+
+       
+        $serviceList = $query->paginate($paginate, ['*'], 'page', $page);
+
+        //update the image path
+        foreach ($serviceList as $service) {
+            $service->images = '/assets/services/thumb/' . $service->images;
+        }
+
+        // //update the detail image path
+        // foreach ($getServiceList as $service) {
+        //     $serviceDetailImages = $service->detailImages;
+        //     foreach ($serviceDetailImages as $serviceDetailImage) {
+        //         $serviceDetailImage->service_image = '/assets/services/detail/' . $serviceDetailImage->service_image;
+        //     }
+        // }
+
+
+        return $this->apiResponses->sendResponse($serviceList, 'Service list retrieved successfully');
     }
 
     public function storeService($serviceData)
@@ -44,6 +69,7 @@ class ServicesService
                 $discountAmount = $serviceData['price'] * ($serviceData['discount'] / 100);
                 $discountedPrice = $serviceData['price'] - $discountAmount;
     
+            try {
                 // Create the main service entry
                 $service = Service::create([
                     'title' => $serviceData['title'],
@@ -55,7 +81,12 @@ class ServicesService
                     'images' => $imageName,
                     'activity_feature' => $serviceData['activity_feature'],
                 ]);
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
+
     
+            try {
                 // Store service detail images
                 if (isset($serviceData['detail_images'])) {
                     foreach ($serviceData['detail_images'] as $detailImage) {
@@ -66,39 +97,63 @@ class ServicesService
                             'service_id' => $service->id,
                             'service_image' => $detailImageName,
                         ]);
+
                     }
                 }
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
+
+            
+
+                try {
+                    ServiceDetailPackage::create([
+                        'service_id' => $service->id,
+                        'tour_date' => $serviceData['tour_date'],
+                        'tour_type' => $serviceData['tour_type'],
+                        'meeting_point' => $serviceData['meeting_point'],
+                        'opening_hours' => $serviceData['opening_hours'],
+                        'starting_time' => $serviceData['starting_time'],
+                        'is_online' => $serviceData['is_online'] ?? '0', // '0' => 'No', '1' => 'Yes'
+                        'ticket_details' => $serviceData['ticket_details'],
+                    ]);
+                } catch (\Throwable $th) {
+                    Log::error($th->getMessage());
+                }
+
+                
     
-                // Store other related data within the transaction
-                ServiceDetailPackage::create([
-                    'service_id' => $service->id,
-                    'tour_date' => $serviceData['tour_date'],
-                    'tour_type' => $serviceData['tour_type'],
-                   'is_online' => $serviceData['is_online'] ?? '0',
-                    'meeting_point' => $serviceData['meeting_point'],
-                    'opening_hours' => $serviceData['starting_time'],
-                    'ticket_details' => $serviceData['ticket_details'],
-                ]);
-    
+            try{
                 ServiceExperiance::create([
                     'service_id' => $service->id,
                     'full_description' => $serviceData['full_description'],
                     'highlights' => $serviceData['highlights'],
                     'important_information' => $serviceData['important_information'],
                 ]);
-    
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
+
+            try{
                 ServiceOverview::create([
                     'service_id' => $service->id,
                     'service_overviews' => $serviceData['service_overviews'],
                 ]);
-    
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
+
+            try{
                 ServiceWhatIncluded::create([
                     'service_id' => $service->id,
                     'service_includes' => $serviceData['service_includes'],
                 ]);
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
     
-                return $this->apiResponses->sendResponse(
-                    $service, 'Service created successfully');
+            return $this->apiResponses->sendResponse(
+                $service, 'Service created successfully');
             });
     
         } catch (\Throwable $th) {
@@ -112,6 +167,7 @@ class ServicesService
             return DB::transaction(function () use ($id, $updatedServiceData) {
                 $service = Service::findOrFail($id);
     
+            try {
                 // Update the main service data
                 $service->update([
                     'title' => $updatedServiceData['title'],
@@ -122,29 +178,74 @@ class ServicesService
                     'actual_price' => $updatedServiceData['price'] * (1 - $updatedServiceData['discount'] / 100),
                     'activity_feature' => $updatedServiceData['activity_feature'],
                 ]);
-    
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
+
+
+            try {
                 // Update or delete existing detail images and store new ones
                 if (isset($updatedServiceData['detail_images'])) {
                     $detailImages = $updatedServiceData['detail_images'];
-    
-                    // Delete existing detail images not present in the update
-                    $existingDetailImages = $service->detailImages->pluck('id')->toArray();
-                    $imagesToDelete = array_diff($existingDetailImages, array_keys($detailImages));
-                    ServiceDetailImage::whereIn('id', $imagesToDelete)->delete();
-    
-                    // Store/update detail images
-                    foreach ($detailImages as $imageId => $detailImage) {
-                        $imageModel = ServiceDetailImage::findOrNew($imageId);
-                        $imageName = time() . '_' . $detailImage->getClientOriginalName();
-                        $detailImage->move(public_path('assets/services/detail/'), $imageName);
-    
-                        $imageModel->fill([
-                            'service_id' => $id,
-                            'service_image' => $imageName,
-                        ])->save();
+            
+                    // Delete detail images
+                    $serviceDetailImages = ServiceDetailImage::where('service_id', $id)->get();
+                    foreach ($serviceDetailImages as $serviceDetailImage) {
+                        if (!array_key_exists($serviceDetailImage->id, $detailImages)) {
+                            if ($serviceDetailImage->service_image && file_exists(public_path('assets/services/detail/'.$serviceDetailImage->service_image))) {
+                                unlink(public_path('assets/services/detail/'.$serviceDetailImage->service_image));
+                            }
+                            $serviceDetailImage->delete();
+                        }
                     }
+
+                    // Store new detail images
+                    foreach ($detailImages as $detailImage) {
+                        if (!is_numeric($detailImage)) {
+                            $detailImageName = time() . '_' . $detailImage->getClientOriginalName();
+                            $detailImage->move(public_path('assets/services/detail/'), $detailImageName);
+                
+                            ServiceDetailImage::create([
+                                'service_id' => $id,
+                                'service_image' => $detailImageName,
+                            ]);
+                        }
+                    }
+            
+                   
                 }
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
+            
+            try {
+                if (
+                    isset($updatedServiceData['images']) &&
+                    $updatedServiceData['images'] !== null &&
+                    $updatedServiceData['images'] !== '' &&
+                    $updatedServiceData['images'] !== 'undefined'
+                ) {
+                    $oldImage = $service->images;
+            
+                    // Check if the old image file exists before attempting to unlink it
+                    if (file_exists(public_path('assets/services/thumb/' . $oldImage))) {
+                        unlink(public_path('assets/services/thumb/' . $oldImage));
+                    }
+            
+                    $image = $updatedServiceData['images'];
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $image->move(public_path('assets/services/thumb/'), $imageName);
+                    $service->update([
+                        'images' => $imageName,
+                    ]);
+                }
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
+            
+
     
+            try {
                 // Update other related data
                 $serviceDetailPackage = ServiceDetailPackage::updateOrCreate(
                     ['service_id' => $id],
@@ -154,9 +255,14 @@ class ServicesService
                         'meeting_point' => $updatedServiceData['meeting_point'],
                         'opening_hours' => $updatedServiceData['opening_hours'],
                         'ticket_details' => $updatedServiceData['ticket_details'],
+                        'starting_time' => $updatedServiceData['starting_time'],
                     ]
                 );
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
     
+            try {
                 $serviceExperiance = ServiceExperiance::updateOrCreate(
                     ['service_id' => $id],
                     [
@@ -165,16 +271,27 @@ class ServicesService
                         'important_information' => $updatedServiceData['important_information'],
                     ]
                 );
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
     
+            try {
                 $serviceOverview = ServiceOverview::updateOrCreate(
                     ['service_id' => $id],
                     ['service_overviews' => $updatedServiceData['service_overviews']]
                 );
-    
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
+
+            try {
                 $serviceWhatIncluded = ServiceWhatIncluded::updateOrCreate(
                     ['service_id' => $id],
                     ['service_includes' => $updatedServiceData['service_includes']]
                 );
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
     
                 return $this->apiResponses->sendResponse($service, 'Service updated successfully');
             });
@@ -188,6 +305,8 @@ class ServicesService
     public function getService($id){
         try {
             $service = Service::with(['images','whatIncludes','serviceExp','serviceOverview'])->findOrFail($id);
+            $serviceDetailPackage = ServiceDetailPackage::where('service_id',$id)->first();
+            $service->serviceDetailPackage = $serviceDetailPackage;
             return $this->apiResponses->sendResponse($service, 'Service retrieved successfully');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return $this->apiResponses->sendError('Service not found', [], 404);
@@ -201,10 +320,27 @@ class ServicesService
         try {
             $service = Service::findOrFail($id);
             // Check if the image is available and delete it
-            // public_path('assets/services/thumb/'), $imageName
+            try {
+                $serviceDetailImages = $service->detailImages;
+                foreach ($serviceDetailImages as $serviceDetailImage) {
+                    if ($serviceDetailImage->service_image && file_exists(public_path('assets/services/detail/'.$serviceDetailImage->service_image))) {
+                        unlink(public_path('assets/services/detail/'.$serviceDetailImage->service_image));
+                    }
+                }
+            } catch (\Throwable $th) {
+                Log::error($th->getMessage());
+            }
+
+            // Delete the main service image
+
+        try {
             if ($service->images && file_exists(public_path('assets/services/thumb/'.$service->images))) {
                 unlink(public_path('assets/services/thumb/'.$service->images));
             }
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+        }
+
 
             $deleted = $service->delete();
 

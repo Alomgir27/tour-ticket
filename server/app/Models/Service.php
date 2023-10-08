@@ -38,4 +38,6 @@ class Service extends Model
     {
         return $this->hasOne(ServiceOverview::class, 'service_id');
     }
+    
 }
+

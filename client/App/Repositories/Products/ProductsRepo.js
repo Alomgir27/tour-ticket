@@ -1,4 +1,4 @@
-import { ApiAuth, ApiBase } from "@/Helper/ApiBase";
+import { ApiAuth, ApiBase, Capabilities, ApiBaseMysql } from "@/Helper/ApiBase";
 import { request } from "@/Service/ApiServices";
 
 export const ProductsRepo = {
@@ -9,6 +9,7 @@ export const ProductsRepo = {
                 headers: {
                     Accept: `application/json`,
                     "Content-Type": `application/json`,
+                    'Octo-Capabilities': Capabilities,
                     Authorization: `Bearer ${ApiAuth}`,
                 },
                 url: `${ApiBase}/products`,
@@ -23,6 +24,7 @@ export const ProductsRepo = {
                 headers: {
                     Accept: `application/json`,
                     "Content-Type": `application/json`,
+                    'Octo-Capabilities': Capabilities,
                     Authorization: `Bearer ${ApiAuth}`,
                 },
                 url: `${ApiBase}/availability`,
@@ -31,4 +33,76 @@ export const ProductsRepo = {
         });
         return res;
     },
+    getCategoryInfo: async () => {
+        const res = await request({
+            axiosConfig: {
+                method: "GET",
+                headers: {
+                    Accept: `application/json`,
+                    "Content-Type": `application/json`,
+                    'Octo-Capabilities': Capabilities,
+                    Authorization: `Bearer ${ApiAuth}`,
+                },
+                url: `${ApiBase}/suppliers`,
+            },
+        });
+        return res;
+    },
+    getAllProductsByCategoryId: async (id) => {
+        const res = await request({
+            axiosConfig: {
+                method: "GET",
+                headers: {
+                    Accept: `application/json`,
+                    "Content-Type": `application/json`,
+                    'Octo-Capabilities': Capabilities,
+                    Authorization: `Bearer ${ApiAuth}`,
+                },
+                url: `${ApiBase}/products?categoryId=${id}`,
+            },
+        });
+        return res;
+    },
+    getAllProductsByDestinationId: async (id) => {
+        const res = await request({
+            axiosConfig: {
+                method: "GET",
+                headers: {
+                    Accept: `application/json`,
+                    "Content-Type": `application/json`,
+                    'Octo-Capabilities': Capabilities,
+                    Authorization: `Bearer ${ApiAuth}`,
+                },
+                url: `${ApiBase}/products?destinationId=${id}`,
+            },
+        });
+        return res;
+    },
+    getLocalProducts: async () => {
+        const res = await request({
+            axiosConfig: {
+                method: "GET",
+                headers: {
+                    Accept: `application/json`,
+                    "Content-Type": `application/json`,
+                },
+                url: `${ApiBaseMysql}/services`,
+            },
+        });
+        return res;
+    },
+    getLocalProductById: async (id) => {
+        const res = await request({
+            axiosConfig: {
+                method: "GET",
+                headers: {
+                    Accept: `application/json`,
+                    "Content-Type": `application/json`,
+                },
+                url: `${ApiBaseMysql}/services/${id}`,
+            },
+        });
+        return res;
+    }
+        
 };

@@ -16,7 +16,7 @@ function PackageOptions({ options }) {
     const [selectedItem, setSelectedItem] = useState([{}]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [activeDate, setActiveDate] = useState("today");
-    const { units } = options[0];
+    const { units } = options?.length > 0 ? options[0] : [];
     let router = useRouter();
     const date = new Date();
     const today = date.toISOString().slice(0, 10);
@@ -65,7 +65,7 @@ function PackageOptions({ options }) {
     const packageData = async (firstDate, lastDate) => {
         const productData = new FormData();
         productData.append("productId", router.query.service_id);
-        productData.append("optionId", options[0].id ?? "DEFAULT");
+        productData.append("optionId", options?.length > 0 ? options[0].id : "DEFAULT");
         productData.append("localDateStart", firstDate);
         productData.append("localDateEnd", lastDate);
 
