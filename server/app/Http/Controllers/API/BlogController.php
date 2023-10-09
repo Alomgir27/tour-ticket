@@ -29,7 +29,6 @@ class BlogController extends Controller
      */
     public function store(StoreBlogRequest $request)
     {
-       
        return $this->blogService->storeBlog($request->validated());
     }
 
@@ -40,6 +39,13 @@ class BlogController extends Controller
     {
         return $this->blogService->blogDetails($id);
           
+    }
+
+    /**
+     * Display all the top_blog
+     */
+    public function topBlogs(){
+        return $this->blogService->getTopBlogs();
     }
 
     /**

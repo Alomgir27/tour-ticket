@@ -22,6 +22,7 @@ function EditServiceForm() {
     discount: "",
     detail_images: null,
     activity_feature: "",
+    category: "",
     tour_date: "",
     tour_type: "",
     meeting_point: "",
@@ -49,10 +50,11 @@ function EditServiceForm() {
       short_description: services?.short_description || "",
       discount: services?.discount || "",
       activity_feature: services?.activity_feature || "",
+      category: services?.category || "",
       tour_date: services?.serviceDetailPackage?.tour_date ? new Date(services?.serviceDetailPackage?.tour_date) : "",
+      opening_hours: services?.serviceDetailPackage?.opening_hours ? new Date(services?.serviceDetailPackage?.opening_hours) : "",
       tour_type: services?.serviceDetailPackage?.tour_type || "",
       meeting_point: services?.serviceDetailPackage?.meeting_point || "",
-      starting_time: services?.serviceDetailPackage?.starting_time ? new Date(services?.serviceDetailPackage?.starting_time) : "",
       ticket_details: services?.serviceDetailPackage?.ticket_details || "",
       full_description: services?.service_exp?.length ? services?.service_exp[0]?.full_description : "",
       highlights: services?.service_exp?.length ? services?.service_exp[0]?.highlights : "",
@@ -60,6 +62,7 @@ function EditServiceForm() {
       service_overviews: services?.service_overview?.service_overviews || "",
       service_includes: services?.what_includes?.length ? services?.what_includes[0]?.service_includes : "",
     });
+    console.log(services);
   }, [services]);
 
   useEffect(() => {
@@ -199,6 +202,16 @@ function EditServiceForm() {
             />
           </Col>
         </Row>
+        <Row>
+          <Col>
+            <Form.Control
+              onChange={handleInputChange}
+              name="category"
+              placeholder="Category"
+              value={serviceData.category}
+            />
+          </Col>
+        </Row>
       </Card.Body>
 
       <FormLabel as={"h4"}>Service Details Image</FormLabel>
@@ -253,10 +266,10 @@ function EditServiceForm() {
         <Row>
           <Col>
             <DatePicker
-              selected={serviceData.starting_time}
-              onChange={(date) => handleDateChange(date, "starting_time")}
-              name="starting_time"
-              placeholderText="starting_time"
+              selected={serviceData.opening_hours}
+              onChange={(date) => handleDateChange(date, "opening_hours")}
+              name="opening_hours"
+              placeholderText="Opening Hours"
               dateFormat="h:mm aa"
               showTimeSelect
               showTimeSelectOnly

@@ -3,7 +3,7 @@ import CategoryCardTitle from "./CategoryCardTitle";
 import Container from "../Layout/Container";
 import PlaceCard from "../Utils/PlaceCard";
 
-function TopPlace() {
+function TopPlace({ topBlogs }) {
     return (
         <Container>
             <div className="flex flex-col gap-9 pb-16">
@@ -13,11 +13,13 @@ function TopPlace() {
                         "See our top discount guided tours. Colosseum, Vatican Museums, Pompeii, Capri and many others."
                     }
                 />
-                <div className="grid grid-cols-top-places gap-3">
-                    <PlaceCard />
-                    <PlaceCard />
-                    <PlaceCard />
-                    <PlaceCard />
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                   {topBlogs?.map((blog) => (
+                        <PlaceCard
+                            key={blog.id}
+                            item={blog}
+                        />
+                    ))}
                 </div>
             </div>
         </Container>

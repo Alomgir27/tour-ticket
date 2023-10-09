@@ -91,6 +91,21 @@ export const BlogsRepo = {
             },
         });
         return res;
-    }
+    },
+    getTopBlogs: async () => {
+        const res = await request({
+            axiosConfig: {
+                method: "GET",
+                headers: {
+                    Accept: `application/json`,
+                    "Content-Type": `application/json`,
+                    'Octo-Capabilities': Capabilities,
+                    Authorization: `Bearer ${ApiAuth}`,
+                },
+                url: `${ApiBaseMysql}/blog/top-blogs`,
+            },
+        });
+        return res;
+    },
 }
 

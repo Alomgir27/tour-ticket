@@ -1,22 +1,23 @@
 import React from "react";
+import NextImage from "./NextImage";
 
-function PlaceCard() {
+function PlaceCard({ item }) {
   return (
-    <div className="w-full h-[212px] flex-col justify-end flex relative max-xs:rounded-2xl rounded-[20px] max-xs:w-full">
-      <img
-        className="w-full h-[212px] max-xs:w-full"
-        src="/assets/top-place/top-place1.png"
-        alt=""
+    <div className="relative w-full h-[212px] max-xs:w-full rounded-2xl overflow-hidden cursor-pointer">
+    {item?.image && (
+      <NextImage
+        src={item?.image || "/images/placeholder.png"}
+        alt="top-place"
+        className="object-cover object-center"
+        width={500}
       />
-      <div className="absolute w-full max-xs:px-3 max-xs:py-3 px-[21px] py-[23px] bg-gradient-to-t from-black via-black/70 to-black/0 rounded-bl-2xl rounded-br-2xl flex-col gap-0.5 flex">
-        <div className="text-white text-lg font-bold capitalize">
-          Title of the Place name
-        </div>
-        <div className="opacity-60 text-white font-light capitalize">
-          subtitle this beauty of place
-        </div>
-      </div>
-    </div>
+    )}
+      <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-black to-transparent"></div>
+       <div className="absolute bottom-0 left-0 w-full h-full flex flex-col justify-end px-4 pb-4">
+         <h3 className="text-white text-lg font-semibold text-center">{item?.title}</h3>
+         <p className="text-white text-sm text-center">{item?.short_desc}</p>
+       </div>
+     </div>
   );
 }
 

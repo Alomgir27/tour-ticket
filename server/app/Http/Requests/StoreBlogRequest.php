@@ -26,7 +26,8 @@ class StoreBlogRequest extends FormRequest
             'details' => 'required|string',
             'image'=>'required|image|mimes:jpeg,png,jpg|max:2048',
             'tag'=>'required|string',
-            'short_desc'=>'required|string'
+            'short_desc'=>'required|string',
+            'is_top_blog'=>'required|string',
         ];
     }
 }

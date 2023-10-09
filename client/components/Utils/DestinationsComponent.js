@@ -1,7 +1,7 @@
 // components/FilterComponent.js
 import React, { useState } from "react";
 
-const DestinationsComponent = () => {
+const DestinationsComponent = ({ items, selected, setSelected }) => {
     const [isSectionOpen, setIsSectionOpen] = useState(false);
 
     const toggleSection = () => {
@@ -49,7 +49,26 @@ const DestinationsComponent = () => {
             <div className={`${isSectionOpen ? "" : "hidden"}`} id="filter-destinations-2">
                 <div className="pt-4" id="filter-destinations-2">
                     <div className="space-y-4">
-                        <div className="flex items-center">
+                        {items?.map((item) => (
+                            <div className="flex items-center">
+                                <input
+                                    id={`filter-destinations-${item?.id}`}
+                                    name="destinations[]"
+                                    value={item?.id}
+                                    type="checkbox"
+                                    checked={selected == item?.id}
+                                    onChange={() => setSelected(selected == item?.id ? null : item?.id)}
+                                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                />
+                                <label
+                                    for={`filter-destinations-${item?.id}`}
+                                    className="ml-3 text-sm text-gray-600"
+                                >
+                                    {item?.name}
+                                </label>
+                            </div>
+                        ))}
+                        {/* <div className="flex items-center">
                             <input
                                 id="filter-destinations-0"
                                 name="destinations[]"
@@ -109,7 +128,7 @@ const DestinationsComponent = () => {
                             <label for="filter-destinations-4" className="ml-3 text-sm text-gray-600">
                                 Postugal
                             </label>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

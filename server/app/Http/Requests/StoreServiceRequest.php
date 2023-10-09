@@ -30,6 +30,7 @@ class StoreServiceRequest extends FormRequest
             'images' => 'required|mimes:jpeg,png,jpg',
             'short_description' => 'required|string',
             'activity_feature' => 'required|string',
+            'category' => 'required|string',
             //service details images validation
             'detail_images' => 'required',
             //service details package validation

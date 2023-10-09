@@ -9,14 +9,16 @@ import { useGetServices } from "@/App/Repositories/Services/GetServices";
 import { useGetCategories } from "@/App/Repositories/Categories/GetCategories";
 import TextInput from "@/components/Utils/TextInput";
 import LocalProductCard from "@/components/Utils/LocalProductCard";
+import FilterComponent from "@/components/Utils/FilterComponent";
+import TimeComponent from "@/components/Utils/TimeComponent";
+import DestinationsComponent from "@/components/Utils/DestinationsComponent";
+import InterestsComponent from "@/components/Utils/InterestsComponent";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 
 const services = () => {
     const router = useRouter();
-    const pageNumber = router.query.page || 1;
-    const [search, setSearch] = useState("");
-    const [destinationId, setDestinationId] = useState("");
-    const [categoryId, setCategoryId] = useState("");
     const [categoryList, setCategoryList] = useState([]);
     const [destinationList, setDestinationList] = useState([]);
     const [serviceList, setServiceList] = useState([]);
@@ -26,6 +28,24 @@ const services = () => {
     const [totalPages, setTotalPages] = useState(0);
     const [totalItems, setTotalItems] = useState(0);
     const [showAll, setShowAll] = useState(false);
+
+    const [search, setSearch] = useState("");
+    const [category, setCategory] = useState("");
+    const [categoryId, setCategoryId] = useState("");
+    const [destinationId, setDestinationId] = useState("");
+    const [interests, setInterests] = useState([]);
+    const [time, setTime] = useState("");
+    const [price, setPrice] = useState("");
+    const [rating, setRating] = useState("");
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
+    const [sort, setSort] = useState("asc");
+    const [startHour, setStartHour] = useState("");
+    const [endHour, setEndHour] = useState("");
+
+
+
+
 
     const { data: serviceData, isLoading: serviceLoading, isError: serviceError, venTraTaProducts: venTraProducts  } = useGetServices(page,  destinationId, categoryId);
     const { data: categoryData, isLoading: categoryLoading, isError: categoryError } = useGetCategories();
@@ -52,17 +72,25 @@ const services = () => {
             categoryData?.map((item) => {
                  destinationList = [...destinationList, ...item?.destinations];
             });
+            setDestinationList(destinationList);
+        }
+    }, [categoryData]);
+
+    useEffect(() => {
+        if (destinationId && categoryData) {
             let categoryList = [];
             categoryData?.map((item) => {
                 item?.destinations.map((destination) => {
-                     categoryList = [...categoryList, ...destination.categories];
-                });
+                    if (destination.id == destinationId) {
+                        categoryList = [...categoryList, ...destination.categories];
+                    }
+                }
+                );
             });
-           
-            setDestinationList(destinationList);
             setCategoryList(categoryList);
         }
-    }, [categoryData]);
+    }
+        , [destinationId]);
 
     useEffect(() => {
         setIsLoading(serviceLoading || categoryLoading);
@@ -92,39 +120,75 @@ const services = () => {
             <BreadCrumb path={router.asPath} />
             <div className="flex flex-col md:flex-row mt-8">
                 <div className="w-full md:w-1/4">
-                    <div className="mb-4">
-                       <select className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent" onChange={handleDestination}>
-                            <option value="" selected>All Destinations</option>
-                            {destinationList?.map((destination) => (
-                                <option key={destination?.id} value={destination?.id} selected={destinationId == destination?.id}> 
-                                    {destination?.name}
-                                </option>
-                            ))}
-                        </select>
+            
+                   <div className="mb-4">
+                        <DestinationsComponent items={destinationList} selected={destinationId} setSelected={setDestinationId} />
                     </div>
-                    {destinationId && (
-                        <div className="mb-4">
-                            <select className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent" onChange={handleCategory}>
-                                <option value="" selected>All Categories</option>
-                                {categoryList?.map((category) => (
-                                    <option key={category?.id} value={category?.id} selected={categoryId == category?.id}>
-                                        {category?.title}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-                    {/* toggel show all here by radio button */}
+                {destinationId && (
                     <div className="mb-4">
-                        <div className="flex items-center gap-2">
-                            <input type="radio" id="showAll" name="showAll" value="showAll" checked={showAll} onChange={() => setShowAll(true)} />
-                            <label htmlFor="showAll">Show All</label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <input type="radio" id="showAll" name="showAll" value="showAll" checked={!showAll} onChange={() => setShowAll(false)} />
-                            <label htmlFor="showAll">Show Max 8</label>
-                        </div>
+                        <FilterComponent items={categoryList?.map((item) => ({ id: item?.id, name: item?.title }))} selected={categoryId} setSelected={setCategoryId} />
                     </div>
+                  )}
+                   <div className="mb-4">
+                        <DatePicker
+                            selected={startDate}
+                            onChange={(date) => {
+                                setStartDate(date);
+                                setEndDate(date);
+                            }}
+                            minDate={new Date()}
+                            placeholderText="Select a date"
+                            className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <DatePicker 
+                            selected={endDate}
+                            onChange={(date) => setEndDate(date)}
+                            minDate={new Date(startDate)}
+                            placeholderText="Select a date"
+                            className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <DatePicker
+                            selected={startHour}
+                            onChange={(date) => {
+                                setStartHour(date);
+                                setEndHour(date);
+                            }}
+                            showTimeSelect
+                            showTimeSelectOnly
+                            timeIntervals={15}
+                            timeCaption="Time"
+                            dateFormat="h:mm aa"
+                            placeholderText="Select a time"
+                            className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <DatePicker
+                            selected={endHour}
+                            onChange={(date) => setEndHour(date)}
+                            showTimeSelect
+                            showTimeSelectOnly
+                            timeIntervals={15}
+                            timeCaption="Time"
+                            dateFormat="h:mm aa"
+                            placeholderText="Select a time"
+                            className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+                        />
+                    </div>
+                    
+                    <div className="mb-4">
+                         <TimeComponent />
+                    </div>
+                    
+                    <div className="mb-4">
+                        <InterestsComponent />
+                    </div>
+
+
 
                 </div>
                 <div className="w-full md:w-3/4 pl-0 md:pl-8">

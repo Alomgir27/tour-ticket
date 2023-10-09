@@ -17,7 +17,7 @@ class BlogService
     public function blogList()
     {
         try {
-            $blogListCard = Blog::select('id', 'title', 'thumbnail', 'image', 'tag', 'short_desc', 'created_at', 'details')->orderBy('id', 'desc')->paginate(10);
+            $blogListCard = Blog::select('id', 'title', 'thumbnail', 'image', 'tag', 'short_desc', 'created_at', 'details', 'is_top_blog')->orderBy('id', 'desc')->paginate(10);
             return $this->apiResponses->sendResponse($blogListCard, 'Blog List Card retrieved successfully');
         } catch (\Throwable $th) {
             return $this->apiResponses->sendError($th->getMessage(), [], 500);
@@ -26,6 +26,7 @@ class BlogService
 
     public function storeBlog($blogData)
     {
+        Log::info($blogData);
         try {
             if ($blogData['image']) {
                 $image = $blogData['image'];
@@ -37,7 +38,7 @@ class BlogService
                 $image->move(public_path('assets/blog/'), $imageName);
             }
 
-            
+        try {
             $blog = Blog::create([
                 'title' => $blogData['title'],
                 'details' => $blogData['details'],
@@ -45,7 +46,11 @@ class BlogService
                 'image' => '/assets/blog/' . $imageName,
                 'tag' => $blogData['tag'],
                 'short_desc' => $blogData['short_desc'],
+                'is_top_blog' => $blogData['is_top_blog'],
             ]);
+        } catch (\Throwable $th) {
+            Log::error($th->getMessage());
+        }
 
 
             if (!$blog) {
@@ -53,6 +58,10 @@ class BlogService
             }
 
             return $this->apiResponses->sendResponse($blog, 'Blog created successfully');
+
+
+
+
         } catch (\Throwable $th) {
             return $this->apiResponses->sendError($th->getMessage(), [], 500);
         }
@@ -71,11 +80,12 @@ class BlogService
 
     public function updateBlog($blogId, $blogData)
     {
+        Log::info($blogData);
      try {
             $blog = Blog::findOrFail($blogId);
 
         try {
-            if ($blogData['image']) {
+            if ($blogData['image'] != null && $blogData['image'] != '' && $blogData['image'] != 'null' && $blogData['image'] != 'undefined') {
                 $oldImage = $blog->image;
                 $oldThumb = $blog->thumbnail;
                 unlink(public_path() . $oldImage);
@@ -102,6 +112,7 @@ class BlogService
                 // 'image' => '/assets/blog/' . $imageName,
                 'tag' => $blogData['tag'],
                 'short_desc' => $blogData['short_desc'],
+                'is_top_blog' => $blogData['is_top_blog'],
             ]);
 
             if (!$blog) {
@@ -109,6 +120,15 @@ class BlogService
             }
 
             return $this->apiResponses->sendResponse($blog, 'Blog updated successfully');
+        } catch (\Throwable $th) {
+            return $this->apiResponses->sendError($th->getMessage(), [], 500);
+        }
+    }
+
+    public function getTopBlogs(){
+        try{
+            $blog = Blog::where('is_top_blog', 1)->get();
+            return $this->apiResponses->sendResponse($blog, 'Top Blog retrieved successfully');
         } catch (\Throwable $th) {
             return $this->apiResponses->sendError($th->getMessage(), [], 500);
         }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('actual_price');
             $table->string('images');
             $table->string('activity_feature');
+            $table->string('category');
             $table->timestamps();
         });
     }

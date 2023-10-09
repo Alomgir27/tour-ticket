@@ -18,6 +18,7 @@ function CreateServiceForm() {
     discount: "",
     detail_images: null,
     activity_feature: "",
+    category: "",
     tour_date: "",
     tour_type: "",
     meeting_point: "",
@@ -133,6 +134,15 @@ function CreateServiceForm() {
               onChange={handleInputChange}
               name={"activity_feature"}
               placeholder="Activity Features"
+            />
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Control
+              onChange={handleInputChange}
+              name={"category"}
+              placeholder="Category"
             />
           </Col>
         </Row>

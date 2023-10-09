@@ -16,7 +16,7 @@ export const useGetServices = (page, destinationId, categoryId) => {
   const [date, setDate] = useState("");
   const [duration, setDuration] = useState("");
 
-  console.log("useGetServices", page, destinationId, categoryId);
+  // console.log("useGetServices", page, destinationId, categoryId);
 
  
   useEffect(() => {

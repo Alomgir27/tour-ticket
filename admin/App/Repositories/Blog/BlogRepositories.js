@@ -16,15 +16,14 @@ export const BlogRepository = {
     return res ?? null;
   },
   create: async (data) => {
-    // console.log(data);
+    console.log(data, data.get("is_top_blog"));
     const res = await request({
       axiosConfig: {
         method: "POST",
         headers: {
           Accept: `application/json`,
-          "Content-Type": `application/json`,
-          "Access-Control-Allow-Origin": "*", // Required for CORS support to work
-          "Access-Control-Allow-Credentials": true, // Required for cookies, authorization headers with HTTPS
+          "Content-Type": `multipart/form-data`,
+          "Process-Data": false,
 
         },
         url: `${ApiBase}/blog`,

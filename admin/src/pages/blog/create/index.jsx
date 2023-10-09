@@ -2,7 +2,6 @@ import { Button, Card } from "react-bootstrap";
 import React from "react";
 import Link from "next/link";
 import AdminLayout from "../../../layout/AdminLayout/AdminLayout";
-import CreateServiceForm from "../../../components/AllForms/CreateServiceForm";
 import CreateBlogForm from "../../../components/AllForms/CreateBlogForm";
 
 const index = () => {

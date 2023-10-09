@@ -21,6 +21,7 @@ const servicesService = {
     formData.append("discount", data.discount);
     formData.append("short_description", data.short_description);
     formData.append("activity_feature", data.activity_feature);
+    formData.append("category", data.category);
     formData.append("images", data.images);
 
     for (let i = 0; i < data.detail_images.length; i++) {
@@ -50,6 +51,7 @@ const servicesService = {
     formData.append("discount", data.discount);
     formData.append("short_description", data.short_description);
     formData.append("activity_feature", data.activity_feature);
+    formData.append("category", data.category);
     formData.append("images", data.images);
 
     for (let i = 0; i < data?.detail_images?.length; i++) {
@@ -59,7 +61,6 @@ const servicesService = {
     formData.append("tour_type", data.tour_type);
     formData.append("meeting_point", data.meeting_point);
     formData.append("opening_hours", data?.opening_hours);
-    formData.append("starting_time", data.starting_time);
     formData.append("ticket_details", data.ticket_details);
 
     formData.append("full_description", data.full_description);

@@ -1,7 +1,7 @@
 // components/FilterComponent.js
 import React, { useState } from "react";
 
-const FilterComponent = () => {
+const FilterComponent = ({ items, selected, setSelected }) => {
     const [isSectionOpen, setIsSectionOpen] = useState(false);
 
     const toggleSection = () => {
@@ -49,7 +49,27 @@ const FilterComponent = () => {
             <div className={`${isSectionOpen ? "" : "hidden"}`} id="filter-categories-2">
                 <div className="pt-4" id="filter-categories-2">
                     <div className="space-y-4">
-                        <div className="flex items-center">
+                        {items?.map((item) => (
+                            <div className="flex items-center">
+                                <input
+                                    id={`filter-categories-${item?.id}`}
+                                    name="categories[]"
+                                    value={item?.id}
+                                    type="checkbox"
+                                    checked={selected == item?.id}
+                                    onChange={() => setSelected(selected == item?.id ? null : item?.id)}
+                                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                />
+                                <label
+                                    for={`filter-categories-${item?.id}`}
+                                    className="ml-3 text-sm text-gray-600"
+                                >
+                                    {item?.name}
+                                </label>
+                            </div>
+                        ))}
+
+                        {/* <div className="flex items-center">
                             <input
                                 id="filter-categories-0"
                                 name="categories[]"
@@ -122,7 +142,7 @@ const FilterComponent = () => {
                             <label for="filter-categories-5" className="ml-3 text-sm text-gray-600">
                                 Adventures
                             </label>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>

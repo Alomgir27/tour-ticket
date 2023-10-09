@@ -52,6 +52,7 @@ Route::controller(OrderController::class)->group(
 Route::controller(BlogController::class)->group(function () {
     Route::get('blog', 'index');
     Route::post('blog', 'store');
+    Route::get('blog/top-blogs', 'topBlogs');
     Route::get('blog/{id}', 'show');
     Route::post('blog/{id}', 'update');
     Route::delete('blog/{id}', 'destroy');

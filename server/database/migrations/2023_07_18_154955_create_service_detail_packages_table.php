@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('tour_type');
             $table->enum('is_online', ['0', '1'])->default('0');
             $table->string('meeting_point'); 
-            $table->string('starting_time');
             $table->string('opening_hours');
             $table->text('ticket_details');
             $table->timestamps();

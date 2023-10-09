@@ -16,6 +16,7 @@ const BlogService = {
     blogData.append("short_desc", data.short_desc);
     blogData.append("details", data.details);
     blogData.append("tag", data.tag);    
+    blogData.append("is_top_blog", data.is_top_blog ? '1' : '0');
     const res = await BlogRepository.create(blogData);
     notify(res);
     BlogService.getList();
@@ -31,6 +32,7 @@ const BlogService = {
     blogData.append("short_desc", data.short_desc);
     blogData.append("details", data.details);
     blogData.append("tag", data.tag);
+    blogData.append("is_top_blog", data.is_top_blog ? '1' : '0');
     const res = await BlogRepository.update(id, blogData);
     BlogService.getList();
     notify(res);

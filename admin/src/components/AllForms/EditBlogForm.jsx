@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { Card, Col, FormLabel, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -13,6 +13,7 @@ function EditBlogForm({ blog }) {
     tag: "",
     short_desc: "",
     details: "",
+    is_top_blog: true
   });
 
     useEffect(() => {
@@ -23,9 +24,17 @@ function EditBlogForm({ blog }) {
         tag: blog?.data.tag,
         short_desc: blog?.data.short_desc,
         details: blog?.data.details,
+        is_top_blog: blog?.data.is_top_blog === "0" ? false : true
         });
     }
     }, [blog]);
+
+    useEffect(() => {
+      console.log("blogData", blogData);
+    }
+    , [blogData]);
+
+    
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -107,6 +116,17 @@ function EditBlogForm({ blog }) {
               rows="3"
               value={blogData.details}
             ></textarea>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Check
+              onChange={handleInputChange}
+              name={"is_top_blog"}
+              label="Is Top Blog"
+              value={blogData.is_top_blog}
+              checked={blogData.is_top_blog}
+            />
           </Col>
         </Row>
       </Card.Body>

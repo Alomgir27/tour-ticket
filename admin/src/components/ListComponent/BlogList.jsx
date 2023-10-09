@@ -62,6 +62,7 @@ const BlogList = (props) => {
           <th>thumbnail</th>
           <th>Short Desc.</th>
           <th>Tag</th>
+          <th>Is Top Blog</th>
           <th aria-label="Action" />
         </tr>
       </thead>
@@ -82,6 +83,7 @@ const BlogList = (props) => {
               </td>
               <td>{item.short_desc}</td>
               <td>{item.tag}</td>
+              <th>{item.is_top_blog}</th>
               <td>
                 <Dropdown align="end">
                   <Dropdown.Toggle

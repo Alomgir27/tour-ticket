@@ -80,6 +80,7 @@ class ServicesService
                     'actual_price' => $discountedPrice,
                     'images' => $imageName,
                     'activity_feature' => $serviceData['activity_feature'],
+                    'category' => $serviceData['category'],
                 ]);
             } catch (\Throwable $th) {
                 Log::error($th->getMessage());
@@ -113,7 +114,6 @@ class ServicesService
                         'tour_type' => $serviceData['tour_type'],
                         'meeting_point' => $serviceData['meeting_point'],
                         'opening_hours' => $serviceData['opening_hours'],
-                        'starting_time' => $serviceData['starting_time'],
                         'is_online' => $serviceData['is_online'] ?? '0', // '0' => 'No', '1' => 'Yes'
                         'ticket_details' => $serviceData['ticket_details'],
                     ]);
@@ -177,6 +177,7 @@ class ServicesService
                     'discount' => $updatedServiceData['discount'],
                     'actual_price' => $updatedServiceData['price'] * (1 - $updatedServiceData['discount'] / 100),
                     'activity_feature' => $updatedServiceData['activity_feature'],
+                    'category' => $updatedServiceData['category'],
                 ]);
             } catch (\Throwable $th) {
                 Log::error($th->getMessage());
@@ -255,7 +256,6 @@ class ServicesService
                         'meeting_point' => $updatedServiceData['meeting_point'],
                         'opening_hours' => $updatedServiceData['opening_hours'],
                         'ticket_details' => $updatedServiceData['ticket_details'],
-                        'starting_time' => $updatedServiceData['starting_time'],
                     ]
                 );
             } catch (\Throwable $th) {

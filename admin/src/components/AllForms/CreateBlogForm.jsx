@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Card, Col, FormLabel, Row } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import servicesService from "../../../App/Services/Service/servicesService";
 import BlogService from "../../../App/Services/Blog/BlogService";
 import { useRouter } from "next/router";
 
@@ -14,6 +13,7 @@ function CreateBlogForm() {
     tag: null,
     short_desc: "",
     details: "",
+    is_top_blog: false,
   });
 
   const handleInputChange = (e) => {
@@ -96,6 +96,16 @@ function CreateBlogForm() {
               rows="3"
               value={blogData.details}
             ></textarea>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Check
+              onChange={handleInputChange}
+              name={"is_top_blog"}
+              label="Is Top Blog"
+              value={blogData.is_top_blog}
+            />
           </Col>
         </Row>
       </Card.Body>

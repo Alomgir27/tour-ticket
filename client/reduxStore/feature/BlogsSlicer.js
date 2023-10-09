@@ -5,6 +5,7 @@ const initialState = {
     blogs: [],
     error: null,
     selectedBlog: null,
+    topBlogs: [],
 };
 
 
@@ -23,7 +24,10 @@ const blogsSlicer = createSlice({
         },
         setSelectedBlog: (state, action) => {
             state.selectedBlog = action.payload;
-        }
+        },
+        setTopBlogs: (state, action) => {
+            state.topBlogs = action.payload;
+        },
     },
 });
 
