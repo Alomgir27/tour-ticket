@@ -1,57 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DownArrowSvg from "../Svg/DownArrowSvg";
 import PaginationNumber from "./PaginationNumber";
-import { useRouter } from "next/router";
 
-const Pagination = ({ paginationOptions }) => {
-    const router = useRouter();
-    const category = router.query.category || "All";
-    console.log(paginationOptions);
+const Pagination = ({ page, setPage, totalPages, totalItems }) => {
+    
+    const [pages, setPages] = useState([]);
+
+    useEffect(() => {
+        let pages = [];
+        for(let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
+            pages.push(i);
+        }
+        setPages(pages);
+    }
+    , [page, totalPages]);
+
+
+    
+
+
+
     return (
         <div className=" h-[34px] justify-center items-center gap-0.5 inline-flex">
             <div
                 className="w-8 h-8 py-[11px] justify-center items-center flex cursor-pointer"
                 onClick={() => {
-                    // persist query params
-                    if (paginationOptions?.currentPage === 1) return;
-                    router.push({
-                        pathname: router.pathname,
-                        query: { category: category, page: paginationOptions?.currentPage - 1 },
-                    });
-                }}
+                    if(page === 1) return;
+                    setPage(page - 1);
+                }
+                }
             >
                 <DownArrowSvg className={"rotate-90"} />
             </div>
             {/* PAGINATION NUMBERS */}
             <div className="flex flex-wrap gap-1.5">
-                {Array.from(Array(paginationOptions?.totalPages).keys()).map((item, index) => {
+                {pages.map((item, index) => {
                     return (
                         <PaginationNumber
                             key={index}
-                            active={paginationOptions?.currentPage === item + 1}
+                            active={item === page}
                             onClick={() => {
+                                if(item === page) return;
                                 // persist query params
-                                router.push({
-                                    pathname: router.pathname,
-                                    query: { category: category, page: item + 1 },
-                                });
-                            }}
+                                setPage(item);
+                            }
+                            }
                         >
-                            {item + 1}
+                            {item}
                         </PaginationNumber>
+
                     );
-                })}
+                }
+                )}
             </div>
+            {/* PAGINATION NUMBERS */}
 
             <div
                 className="w-8 h-8 py-[11px] justify-center items-center flex cursor-pointer"
                 onClick={() => {
-                    if (paginationOptions?.currentPage === paginationOptions?.totalPages) return;
-                    // persist query params
-                    router.push({
-                        pathname: router.pathname,
-                        query: { category: category, page: paginationOptions.currentPage + 1 },
-                    });
+                    if(page === totalPages) return;
+                    setPage(page + 1);
                 }}
             >
                 <DownArrowSvg className={"-rotate-90"} />

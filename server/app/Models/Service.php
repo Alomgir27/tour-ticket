@@ -39,5 +39,14 @@ class Service extends Model
         return $this->hasOne(ServiceOverview::class, 'service_id');
     }
     
+    public function serviceDetailPackage()
+    {
+        return $this->hasOne(ServiceDetailPackage::class, 'service_id');
+    }
+
+    public function detailImages()
+    {
+        return $this->hasMany(ServiceDetailImage::class, 'service_id');
+    }
 }
 

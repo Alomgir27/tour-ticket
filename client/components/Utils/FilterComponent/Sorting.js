@@ -1,12 +1,22 @@
-// components/FilterComponent.js
 import React, { useState } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-const TimeComponent = () => {
+const Sorting = ({ label, sort, setSort }) => {
     const [isSectionOpen, setIsSectionOpen] = useState(false);
 
     const toggleSection = () => {
         setIsSectionOpen(!isSectionOpen);
     };
+    const sortOptions = [
+        { value: "asc", label: "Ascending" },
+        { value: "desc", label: "Descending" },
+        { value: "price-asc", label: "Price: Low to High" },
+        { value: "price-desc", label: "Price: High to Low" },
+        { value: "name-asc", label: "Name: A to Z" },
+        { value: "name-desc", label: "Name: Z to A" },
+        
+    ];
 
     return (
         <div className="border-b border-gray-200 py-6">
@@ -18,7 +28,7 @@ const TimeComponent = () => {
                     aria-controls="filter-time-2"
                     aria-expanded={isSectionOpen}
                 >
-                    <span className="font-medium text-gray-900">Time</span>
+                    <span className="font-medium text-gray-900">{label}</span>
                     <span className="ml-6 flex items-center">
                         {isSectionOpen ? (
                             <svg
@@ -49,43 +59,23 @@ const TimeComponent = () => {
             <div className={`${isSectionOpen ? "" : "hidden"}`} id="filter-time-2">
                 <div className="pt-4" id="filter-time-2">
                     <div className="space-y-4">
+                    {sortOptions.map((option) => (
                         <div className="flex items-center">
                             <input
-                                id="filter-time-0"
-                                name="time[]"
-                                value="2l"
-                                type="checkbox"
+                                id={`filter-time-${option?.value}`}
+                                name="time"
+                                value={option?.value}
+                                type="radio"
+                                checked={sort == option?.value}
+                                onChange={() => setSort(option?.value)}
                                 className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
-                            <label for="filter-time-0" className="ml-3 text-sm text-gray-600">
-                                In the morning, 8 AM-12 PM
+                            <label for={`filter-time-${option?.value}`} className="ml-3 text-sm text-gray-600">
+                                {option?.label}
                             </label>
                         </div>
-                        <div className="flex items-center">
-                            <input
-                                id="filter-time-1"
-                                name="time[]"
-                                value="2l"
-                                type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                            />
-                            <label for="filter-time-1" className="ml-3 text-sm text-gray-600">
-                                In the morning, 8 AM-12 PM
-                            </label>
-                        </div>
-                        <div className="flex items-center">
-                            <input
-                                id="filter-time-2"
-                                name="time[]"
-                                value="2l"
-                                type="checkbox"
-                                checked
-                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                            />
-                            <label for="filter-time-2" className="ml-3 text-sm text-gray-600">
-                                In the evening, 5 PM-12 AM
-                            </label>
-                        </div>
+                    ))}
+                       
                     </div>
                 </div>
             </div>
@@ -93,4 +83,4 @@ const TimeComponent = () => {
     );
 };
 
-export default TimeComponent;
+export default Sorting;

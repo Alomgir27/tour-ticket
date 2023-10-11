@@ -23,31 +23,100 @@ class ServicesService
     }
 
    
-    public function getServiceList($page, $search, $sort, $price, $tags, $date, $duration)
+    public function getServiceList($search, $category, $startDate, $endDate, $sort, $startHour, $endHour, $lowerPrice, $higherPrice, $page)
     {
-        $paginate = 20;
+        $paginate = 1;
 
-        $query = Service::query();
+         // Log::info($search);
+        // Log::info($category);
+        // Log::info($startDate);
+        // Log::info($endDate);
+        // Log::info($sort);
+        // Log::info($startHour);
+        // Log::info($endHour);
+        // Log::info($lowerPrice);
+        // Log::info($higherPrice);
+        // Log::info($page);
 
-        // if($search){
-        //     $query->where('title', 'LIKE', "%{$search}%");
-        // }
+        // { value: "asc", label: "Ascending" },
+        // { value: "desc", label: "Descending" },
+        // { value: "price-asc", label: "Price: Low to High" },
+        // { value: "price-desc", label: "Price: High to Low" },
+        // { value: "name-asc", label: "Name: A to Z" },
+        // { value: "name-desc", label: "Name: Z to A" },
 
-       
+        $query = Service::with(['whatIncludes','serviceExp','serviceOverview','serviceDetailPackage','detailImages']);
+
+
+        if($search){
+            $query->where('title', 'LIKE', "%{$search}%");
+        }
+
+        if($category){
+            $categoryList = explode(' ', $category);
+            //match any of the category
+            $query->where(function ($query) use ($categoryList) {
+                foreach ($categoryList as $category) {
+                    $query->orWhere('category', 'LIKE', "%{$category}%");
+                }
+            });
+        }
+
+        if($startDate){
+            $query->where('tour_date', '>=', $startDate);
+        }
+
+        if($endDate){
+            $query->where('tour_date', '<=', $endDate);
+        }
+
+        if($sort){
+            if($sort == 'asc'){
+                $query->orderBy('created_at', 'asc');
+            }else if($sort == 'desc'){
+                $query->orderBy('created_at', 'desc');
+            }else if($sort == 'price-asc'){
+                $query->orderBy('price', 'asc');
+            }else if($sort == 'price-desc'){
+                $query->orderBy('price', 'desc');
+            }else if($sort == 'name-asc'){
+                $query->orderBy('title', 'asc');
+            }else if($sort == 'name-desc'){
+                $query->orderBy('title', 'desc');
+            }
+        }
+
+        if($startHour){
+            $query->where('opening_hours', '>=', $startHour);
+        }
+
+        if($endHour){
+            $query->where('opening_hours', '<=', $endHour);
+        }
+
+        if($lowerPrice){
+            $lowerPrice = (int)$lowerPrice;
+            $query->where('price', '>=', $lowerPrice);
+        }
+
+        if($higherPrice){
+            $higherPrice = (int)$higherPrice;
+            $query->where('price', '<=', $higherPrice);
+        }
+
         $serviceList = $query->paginate($paginate, ['*'], 'page', $page);
 
         //update the image path
         foreach ($serviceList as $service) {
-            $service->images = '/assets/services/thumb/' . $service->images;
+            $service->images = '/assets/services/thumb/' . $service->images;   
         }
+        
 
-        // //update the detail image path
-        // foreach ($getServiceList as $service) {
-        //     $serviceDetailImages = $service->detailImages;
-        //     foreach ($serviceDetailImages as $serviceDetailImage) {
-        //         $serviceDetailImage->service_image = '/assets/services/detail/' . $serviceDetailImage->service_image;
-        //     }
-        // }
+        foreach ($serviceList as $service) {
+            foreach ($service->detailImages as $detailImage) {
+                $detailImage->service_image = '/assets/services/detail/' . $detailImage->service_image;
+            }
+        }
 
 
         return $this->apiResponses->sendResponse($serviceList, 'Service list retrieved successfully');

@@ -5,16 +5,17 @@ import CategoryCard from "@/components/Utils/CategoryCard";
 import Loading from "@/components/Utils/Loading";
 import Pagination from "@/components/Utils/Pagination";
 import { useRouter } from "next/router";
-import { useGetServices } from "@/App/Repositories/Services/GetServices";
 import { useGetCategories } from "@/App/Repositories/Categories/GetCategories";
-import TextInput from "@/components/Utils/TextInput";
+import { fetchData, fetchVendraData  } from "@/App/Repositories/Services/GetServices";
 import LocalProductCard from "@/components/Utils/LocalProductCard";
-import FilterComponent from "@/components/Utils/FilterComponent";
-import TimeComponent from "@/components/Utils/TimeComponent";
-import DestinationsComponent from "@/components/Utils/DestinationsComponent";
-import InterestsComponent from "@/components/Utils/InterestsComponent";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+//search components
+import FilterComponent from "@/components/Utils/FilterComponent/FilterComponent";
+import DestinationsComponent from "@/components/Utils/FilterComponent/DestinationsComponent";
+import DatePicker from "@/components/Utils/FilterComponent/DatePicker";
+import HourPicker from "@/components/Utils/FilterComponent/HourPicker";
+import TextInput from "@/components/Utils/FilterComponent/TextInput";
+import PricePicker from "@/components/Utils/FilterComponent/PricePicker";
+import Sorting from "@/components/Utils/FilterComponent/Sorting";
 
 
 const services = () => {
@@ -33,38 +34,71 @@ const services = () => {
     const [category, setCategory] = useState("");
     const [categoryId, setCategoryId] = useState("");
     const [destinationId, setDestinationId] = useState("");
-    const [interests, setInterests] = useState([]);
-    const [time, setTime] = useState("");
-    const [price, setPrice] = useState("");
-    const [rating, setRating] = useState("");
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
-    const [sort, setSort] = useState("asc");
+    const [startDate, setStartDate] = useState(''); // '2021-08-01
+    const [endDate, setEndDate] = useState('');
+    const [sort, setSort] = useState("");
     const [startHour, setStartHour] = useState("");
     const [endHour, setEndHour] = useState("");
+    const [lowerPrice, setLowerPirce] = useState("");
+    const [higherPrice, setHigherPrice] = useState("");
 
 
-
-
-
-    const { data: serviceData, isLoading: serviceLoading, isError: serviceError, venTraTaProducts: venTraProducts  } = useGetServices(page,  destinationId, categoryId);
     const { data: categoryData, isLoading: categoryLoading, isError: categoryError } = useGetCategories();
 
-    useEffect(() => {
-        if (serviceData) {
-            setServiceList(serviceData?.data?.data);
-            setTotalPages(serviceData?.data?.last_page);
-            setTotalItems(serviceData?.data?.total);
-        }
-    }, [serviceData]);
 
     useEffect(() => {
-        if (venTraProducts) {
-            setVenTraTaProducts(venTraProducts);
+        const params = {
+            search: search,
+            category: category,
+            destinationId: destinationId,
+            categoryId: categoryId,
+            startDate: startDate,
+            endDate: endDate,
+            sort: sort,
+            startHour: startHour,
+            endHour: endHour,
+            lowerPrice: lowerPrice,
+            higherPrice: higherPrice,
+            page: page,
+        };
+        fetchData(params).then((data) => {
+            console.log(data);
+            setServiceList(data?.data?.data);
+            setTotalPages(data?.data?.last_page);
+            setTotalItems(data?.data?.total);
+        });
+    }, [search, category, destinationId, categoryId, startDate, endDate, sort, startHour, endHour, lowerPrice, higherPrice, page]);
+
+    useEffect(() => {
+        const params = {
+            destinationId: destinationId,
+            categoryId: categoryId,
+        };
+        fetchVendraData(params).then((data) => {
+            setVenTraTaProducts(data);
         }
-    },
-        [venTraProducts]
-    );
+        );
+    }, [destinationId, categoryId]);
+
+    useEffect(() => {
+        const params = {
+            search: search,
+            category: category,
+            destinationId: destinationId,
+            categoryId: categoryId,
+            startDate: startDate,
+            endDate: endDate,
+            sort: sort,
+            startHour: startHour,
+            endHour: endHour,
+            lowerPrice: lowerPrice,
+            higherPrice: higherPrice,
+            page: page,
+        };
+        const queryString = Object.keys(params).map((key) => key + '=' + params[key]).join('&');
+        router.push(`/services?${queryString}`);
+    }, [search, category, destinationId, categoryId, startDate, endDate, sort, startHour, endHour, lowerPrice, higherPrice, page]);
+
 
     useEffect(() => {
         if (categoryData) {
@@ -93,106 +127,142 @@ const services = () => {
         , [destinationId]);
 
     useEffect(() => {
-        setIsLoading(serviceLoading || categoryLoading);
-    }, [serviceLoading, categoryLoading]);
+        setIsLoading(categoryLoading);
+    }, [categoryLoading]);
+
+    useEffect(() => {
+        if(!destinationId) {
+            setCategoryId("");
+            setCategory("");
+        }
+    }, [destinationId]);
 
 
     const paginationOptions = {
         totalPages: totalPages,
         totalItems: totalItems,
-        currentPage: page,
+        page: page,
         setPage: setPage,
     };
 
-    const handleCategory = (e) => {
-        setCategoryId(e.target.value);
+    const handleCategory = (id) => {
+        setCategoryId(id);
+        categoryList?.map((item) => {
+            if (item.id == id) {
+                setCategory(item?.title);
+            }
+        }
+        );
     }
 
-    const handleDestination = (e) => {
-        setDestinationId(e.target.value);
+    const handleDestination = (id) => {
+        setDestinationId(id);
     }
+
+  
 
     if (isLoading) return <Loading />;
-    if (serviceError || categoryError) return <div>Something went wrong</div>;
+    if (categoryError) return <div>Something went wrong</div>;
 
     return (
         <Container>
             <BreadCrumb path={router.asPath} />
             <div className="flex flex-col md:flex-row mt-8">
                 <div className="w-full md:w-1/4">
+
+                <div className="mb-4">
+                    <TextInput
+                        label="Search"
+                        name="search"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search"
+                        type="text"
+                    />
+                </div>
             
-                   <div className="mb-4">
-                        <DestinationsComponent items={destinationList} selected={destinationId} setSelected={setDestinationId} />
-                    </div>
+                <div className="mb-4">
+                    <DestinationsComponent 
+                    items={destinationList} 
+                    selected={destinationId} 
+                    setSelected={handleDestination}
+                    />
+                </div>
+
                 {destinationId && (
                     <div className="mb-4">
-                        <FilterComponent items={categoryList?.map((item) => ({ id: item?.id, name: item?.title }))} selected={categoryId} setSelected={setCategoryId} />
+                        <FilterComponent 
+                          items={categoryList?.map((item) => ({ id: item?.id, name: item?.title }))} 
+                          selected={categoryId} 
+                          setSelected={handleCategory} 
+                          />
                     </div>
                   )}
-                   <div className="mb-4">
-                        <DatePicker
-                            selected={startDate}
-                            onChange={(date) => {
-                                setStartDate(date);
-                                setEndDate(date);
-                            }}
-                            minDate={new Date()}
-                            placeholderText="Select a date"
-                            className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <DatePicker 
-                            selected={endDate}
-                            onChange={(date) => setEndDate(date)}
-                            minDate={new Date(startDate)}
-                            placeholderText="Select a date"
-                            className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <DatePicker
-                            selected={startHour}
-                            onChange={(date) => {
-                                setStartHour(date);
-                                setEndHour(date);
-                            }}
-                            showTimeSelect
-                            showTimeSelectOnly
-                            timeIntervals={15}
-                            timeCaption="Time"
-                            dateFormat="h:mm aa"
-                            placeholderText="Select a time"
-                            className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <DatePicker
-                            selected={endHour}
-                            onChange={(date) => setEndHour(date)}
-                            showTimeSelect
-                            showTimeSelectOnly
-                            timeIntervals={15}
-                            timeCaption="Time"
-                            dateFormat="h:mm aa"
-                            placeholderText="Select a time"
-                            className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-                        />
-                    </div>
-                    
-                    <div className="mb-4">
-                         <TimeComponent />
-                    </div>
-                    
-                    <div className="mb-4">
-                        <InterestsComponent />
-                    </div>
+                
 
+                <div className="mb-4">
+                    <DatePicker
+                        date={startDate}
+                        setDate={setStartDate}
+                        startDate={new Date()}
+                        label='Select Starting Time'
+                    />
+                </div>
 
+                {startDate && (
+                    <div className="mb-4">
+                        <DatePicker
+                            date={endDate}
+                            setDate={setEndDate}
+                            startDate={startDate}
+                            label='Select End Time'
+                        />
+                    </div>
+                )}
+
+                <div className="mb-4">
+                    <HourPicker
+                        hour={startHour}
+                        setHour={setStartHour}
+                        label={"Start"}
+                        startHour={new Date()}
+                    />
+                </div>
+
+                {startHour && (
+                    <div className="mb-4">
+                        <HourPicker
+                            hour={endHour}
+                            setHour={setEndHour}
+                            label={"End"}
+                            startHour={new Date(startHour)}
+                        />
+                    </div>
+                )}
+
+                <div className="mb-4">
+                    <PricePicker
+                        lowerPrice={lowerPrice}
+                        setLowerPirce={setLowerPirce}
+                        higherPrice={higherPrice}
+                        setHigherPrice={setHigherPrice}
+                        label={"Price"}
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <Sorting
+                        sort={sort}
+                        setSort={setSort}
+                        label={"Sort"}
+                    />
+                </div>
+
+               
 
                 </div>
                 <div className="w-full md:w-3/4 pl-0 md:pl-8">
-                {venTraProducts?.length > 0 && (
+                {venTraTaProducts?.length > 0 && (
                     <div className="flex items-center justify-between mb-4">
                         <div className="text-2xl font-bold capitalize">Services</div>
                         <div className="text-sm font-semibold text-gray-500">

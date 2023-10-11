@@ -15,31 +15,37 @@ class ServiceController extends Controller
         $this->service = $service;
     }
 
-    // [2023-10-08 14:39:13] local.INFO: array (
-    //     'page' => '1',
-    //     'search' => NULL,
-    //     'category' => NULL,
+    // [2023-10-11 15:20:12] local.INFO: array (
+    //     'search' => 'Hindi',
+    //     'category' => 'Harry Potter Tours',
+    //     'startDate' => '2023-10-10T18:00:00.000Z',
+    //     'endDate' => NULL,
     //     'sort' => NULL,
-    //     'price' => NULL,
-    //     'tags' => NULL,
-    //     'date' => NULL,
-    //     'duration' => NULL,
+    //     'startHour' => NULL,
+    //     'endHour' => NULL,
+    //     'lowerPrice' => NULL,
+    //     'higherPrice' => NULL,
+    //     'page' => '1',
     //   )  
+      
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $page = $request->page ?? 1;
-        $search = $request->search ?? null;
-        $category = $request->category ?? null;
-        $sort = $request->sort ?? null;
-        $price = $request->price ?? null;
-        $tags = $request->tags ?? null;
-        $date = $request->date ?? null;
-        $duration = $request->duration ?? null;
-        return $this->service->getServiceList($page, $search, $category, $sort, $price, $tags, $date, $duration);
+        $search = $request->input('search');
+        $category = $request->input('category');
+        $startDate = $request->input('startDate');
+        $endDate = $request->input('endDate');
+        $sort = $request->input('sort');
+        $startHour = $request->input('startHour');
+        $endHour = $request->input('endHour');
+        $lowerPrice = $request->input('lowerPrice');
+        $higherPrice = $request->input('higherPrice');
+        $page = $request->input('page');
+
+        return $this->service->getServiceList($search, $category, $startDate, $endDate, $sort, $startHour, $endHour, $lowerPrice, $higherPrice, $page);
 
     }
 

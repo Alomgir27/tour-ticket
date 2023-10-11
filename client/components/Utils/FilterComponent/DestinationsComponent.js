@@ -49,8 +49,8 @@ const DestinationsComponent = ({ items, selected, setSelected }) => {
             <div className={`${isSectionOpen ? "" : "hidden"}`} id="filter-destinations-2">
                 <div className="pt-4" id="filter-destinations-2">
                     <div className="space-y-4">
-                        {items?.map((item) => (
-                            <div className="flex items-center">
+                        {items?.map((item, index) => (
+                            <div className="flex items-center" key={index}>
                                 <input
                                     id={`filter-destinations-${item?.id}`}
                                     name="destinations[]"

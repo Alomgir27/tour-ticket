@@ -5,10 +5,9 @@ import SearchCard from "@/components/Search/SearchCard";
 import BreadCrumb from "@/components/Utils/BreadCrumb";
 import Pagination from "@/components/Utils/Pagination";
 import TransitionComponent from "@/components/Utils/TransitionComponent";
-import FilterComponent from "@/components/Utils/FilterComponent";
-import TimeComponent from "@/components/Utils/TimeComponent";
-import DestinationsComponent from "@/components/Utils/DestinationsComponent";
-import InterestsComponent from "@/components/Utils/InterestsComponent";
+import FilterComponent from "@/components/Utils/FilterComponent/FilterComponent";
+import DestinationsComponent from "@/components/Utils/FilterComponent/DestinationsComponent";
+import InterestsComponent from "@/components/Utils/FilterComponent/InterestsComponent";
 import React from "react";
 
 function search() {
@@ -57,7 +56,6 @@ function search() {
                                 {/* <!-- Filters --> */}
                                 <form className="hidden lg:block">
                                     <FilterComponent />
-                                    <TimeComponent />
                                     <DestinationsComponent />
                                     <InterestsComponent />
                                 </form>
