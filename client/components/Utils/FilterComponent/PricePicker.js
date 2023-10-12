@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const PricePicker = ({ label,  lowerPirce, higherPirce, setLowerPirce, setHigherPrice }) => {
+const PricePicker = ({ label, onApply,  lowerPirce, higherPirce, setLowerPirce, setHigherPrice }) => {
     const [isSectionOpen, setIsSectionOpen] = useState(false);
 
     const toggleSection = () => {
@@ -66,7 +66,11 @@ const PricePicker = ({ label,  lowerPirce, higherPirce, setLowerPirce, setHigher
                             onChange={(e) => setHigherPrice(e.target.value)}
                             />
                         </div>
-                       
+                    {lowerPirce || higherPirce && (
+                        <button type="button" className="w-full bg-red-600 text-white py-2 px-4 rounded-md" onClick={onApply}>
+                            Apply
+                        </button>
+                    )}
                     </div>
                 </div>
             </div>

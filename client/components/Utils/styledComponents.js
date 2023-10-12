@@ -1,8 +1,12 @@
 import SearchSvg from "../Svg/SearchSvg";
 import { HiArrowLongLeft } from "react-icons/hi2";
+import { useRouter } from "next/router";
 
-export const WhereAreYouGoingSearchBox = () => (
-    <div
+export const WhereAreYouGoingSearchBox = ({ search, onChange}) => {
+    const router = useRouter();
+
+   return (
+     <div
         className="bg-[#ede8e8] p-1 rounded-[12px] w-full mt-4 mb-10 lg:mt-10 lg:mb-28 max-md:mb-10"
         style={{ boxShadow: "" }}
         // 0px 14px 54px 0px rgba(87, 29, 11, 0.2)
@@ -13,17 +17,33 @@ export const WhereAreYouGoingSearchBox = () => (
             </div>
             <input
                 type="text"
-                name=""
-                id=""
                 placeholder="Where are you going?"
                 className="w-full outline-none lg:text-lg sm:text-sm font-medium py-2.5"
+                value={search}
+                onChange={(e) => onChange(e)}
+                onKeyUp={(e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        router.push(`search?search=${search}`)
+                    }
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === "Escape") {
+                        onChange({ target: { value: "" } });
+                    }
+                    if(e.key === "Enter") {
+                        e.preventDefault();
+                        router.push(`search?search=${search}`)
+                    }
+                }}
             />
             <button className="text-white w-[130px] h-[52px] px-[35px] py-2.5 bg-red-500 rounded-lg justify-center items-center inline-flex max-xs:hidden">
                 Search
             </button>
         </div>
     </div>
-);
+   )
+}
 
 export const GoBackFromHelpAndSupport = () => (
     <div className="flex items-center gap-4 mb-11 cursor-pointer">

@@ -15,7 +15,7 @@ const Sorting = ({ label, sort, setSort }) => {
         { value: "price-desc", label: "Price: High to Low" },
         { value: "name-asc", label: "Name: A to Z" },
         { value: "name-desc", label: "Name: Z to A" },
-        
+
     ];
 
     return (
@@ -59,8 +59,8 @@ const Sorting = ({ label, sort, setSort }) => {
             <div className={`${isSectionOpen ? "" : "hidden"}`} id="filter-time-2">
                 <div className="pt-4" id="filter-time-2">
                     <div className="space-y-4">
-                    {sortOptions.map((option) => (
-                        <div className="flex items-center">
+                    {sortOptions.map((option, index) => (   
+                        <div className="flex items-center" key={index}>
                             <input
                                 id={`filter-time-${option?.value}`}
                                 name="time"

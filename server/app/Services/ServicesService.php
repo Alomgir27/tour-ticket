@@ -25,102 +25,97 @@ class ServicesService
    
     public function getServiceList($search, $category, $startDate, $endDate, $sort, $startHour, $endHour, $lowerPrice, $higherPrice, $page)
     {
-        $paginate = 1;
-
-         // Log::info($search);
-        // Log::info($category);
-        // Log::info($startDate);
-        // Log::info($endDate);
-        // Log::info($sort);
-        // Log::info($startHour);
-        // Log::info($endHour);
-        // Log::info($lowerPrice);
-        // Log::info($higherPrice);
-        // Log::info($page);
-
-        // { value: "asc", label: "Ascending" },
-        // { value: "desc", label: "Descending" },
-        // { value: "price-asc", label: "Price: Low to High" },
-        // { value: "price-desc", label: "Price: High to Low" },
-        // { value: "name-asc", label: "Name: A to Z" },
-        // { value: "name-desc", label: "Name: Z to A" },
-
+        $paginate = 10;
+    
         $query = Service::with(['whatIncludes','serviceExp','serviceOverview','serviceDetailPackage','detailImages']);
-
-
+    
         if($search){
             $query->where('title', 'LIKE', "%{$search}%");
         }
-
+    
         if($category){
             $categoryList = explode(' ', $category);
-            //match any of the category
+            // Match any of the category
             $query->where(function ($query) use ($categoryList) {
                 foreach ($categoryList as $category) {
                     $query->orWhere('category', 'LIKE', "%{$category}%");
                 }
             });
         }
-
-        if($startDate){
-            $query->where('tour_date', '>=', $startDate);
-        }
-
-        if($endDate){
-            $query->where('tour_date', '<=', $endDate);
-        }
-
+    
         if($sort){
+            // Sort by various criteria
             if($sort == 'asc'){
                 $query->orderBy('created_at', 'asc');
-            }else if($sort == 'desc'){
+            } else if($sort == 'desc'){
                 $query->orderBy('created_at', 'desc');
-            }else if($sort == 'price-asc'){
+            } else if($sort == 'price-asc'){
                 $query->orderBy('price', 'asc');
-            }else if($sort == 'price-desc'){
+            } else if($sort == 'price-desc'){
                 $query->orderBy('price', 'desc');
-            }else if($sort == 'name-asc'){
+            } else if($sort == 'name-asc'){
                 $query->orderBy('title', 'asc');
-            }else if($sort == 'name-desc'){
+            } else if($sort == 'name-desc'){
                 $query->orderBy('title', 'desc');
             }
         }
-
-        if($startHour){
-            $query->where('opening_hours', '>=', $startHour);
+    
+        if($startHour && $endHour){
+            $query->whereHas('serviceDetailPackage', function($q) use ($startHour, $endHour) {
+                $q->where('opening_hours', '>=', $startHour);
+                $q->where('opening_hours', '<=', $endHour);
+            });
+        } elseif($startHour){
+            $query->whereHas('serviceDetailPackage', function($q) use ($startHour) {
+                $q->where('opening_hours', '>=', $startHour);
+            });
+        } elseif($endHour){
+            $query->whereHas('serviceDetailPackage', function($q) use ($endHour) {
+                $q->where('opening_hours', '<=', $endHour);
+            });
         }
-
-        if($endHour){
-            $query->where('opening_hours', '<=', $endHour);
+    
+        if($startDate && $endDate){
+            $query->whereHas('serviceDetailPackage', function($q) use ($startDate, $endDate) {
+                $q->where('tour_date', '>=', $startDate);
+                $q->where('tour_date', '<=', $endDate);
+            });
+        } elseif($startDate){
+            $query->whereHas('serviceDetailPackage', function($q) use ($startDate) {
+                $q->where('tour_date', '>=', $startDate);
+            });
+        } elseif($endDate){
+            $query->whereHas('serviceDetailPackage', function($q) use ($endDate) {
+                $q->where('tour_date', '<=', $endDate);
+            });
         }
-
+    
         if($lowerPrice){
             $lowerPrice = (int)$lowerPrice;
             $query->where('price', '>=', $lowerPrice);
         }
-
+    
         if($higherPrice){
             $higherPrice = (int)$higherPrice;
             $query->where('price', '<=', $higherPrice);
         }
-
+    
         $serviceList = $query->paginate($paginate, ['*'], 'page', $page);
-
-        //update the image path
+    
+        // Update the image path
         foreach ($serviceList as $service) {
-            $service->images = '/assets/services/thumb/' . $service->images;   
+            $service->images = '/assets/services/thumb/' . $service->images;
         }
-        
-
+    
         foreach ($serviceList as $service) {
             foreach ($service->detailImages as $detailImage) {
                 $detailImage->service_image = '/assets/services/detail/' . $detailImage->service_image;
             }
         }
-
-
+    
         return $this->apiResponses->sendResponse($serviceList, 'Service list retrieved successfully');
     }
+    
 
     public function storeService($serviceData)
     {
@@ -174,7 +169,6 @@ class ServicesService
                 Log::error($th->getMessage());
             }
 
-            
 
                 try {
                     ServiceDetailPackage::create([

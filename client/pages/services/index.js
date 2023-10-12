@@ -5,6 +5,7 @@ import CategoryCard from "@/components/Utils/CategoryCard";
 import Loading from "@/components/Utils/Loading";
 import Pagination from "@/components/Utils/Pagination";
 import { useRouter } from "next/router";
+//repositories
 import { useGetCategories } from "@/App/Repositories/Categories/GetCategories";
 import { fetchData, fetchVendraData  } from "@/App/Repositories/Services/GetServices";
 import LocalProductCard from "@/components/Utils/LocalProductCard";
@@ -16,6 +17,8 @@ import HourPicker from "@/components/Utils/FilterComponent/HourPicker";
 import TextInput from "@/components/Utils/FilterComponent/TextInput";
 import PricePicker from "@/components/Utils/FilterComponent/PricePicker";
 import Sorting from "@/components/Utils/FilterComponent/Sorting";
+
+
 
 
 const services = () => {
@@ -41,9 +44,14 @@ const services = () => {
     const [endHour, setEndHour] = useState("");
     const [lowerPrice, setLowerPirce] = useState("");
     const [higherPrice, setHigherPrice] = useState("");
+    const [fakeLowerPrice, setFakeLowerPrice] = useState("");
+    const [fakeHigherPrice, setFakeHigherPrice] = useState("");
+    const [fakeSearch, setFakeSearch] = useState("");
+
+  
 
 
-    const { data: categoryData, isLoading: categoryLoading, isError: categoryError } = useGetCategories();
+    const { data: categoryData } = useGetCategories();
 
 
     useEffect(() => {
@@ -52,11 +60,11 @@ const services = () => {
             category: category,
             destinationId: destinationId,
             categoryId: categoryId,
-            startDate: startDate,
-            endDate: endDate,
+            startDate: startDate ? startDate.toISOString().split("T")[0] : startDate,
+            endDate: endDate ? endDate.toISOString().split("T")[0] : endDate,
             sort: sort,
-            startHour: startHour,
-            endHour: endHour,
+            startHour: startHour ? startHour.toISOString().split("T")[1] : startHour,
+            endHour: endHour ? endHour.toISOString().split("T")[1] : endHour,
             lowerPrice: lowerPrice,
             higherPrice: higherPrice,
             page: page,
@@ -67,7 +75,7 @@ const services = () => {
             setTotalPages(data?.data?.last_page);
             setTotalItems(data?.data?.total);
         });
-    }, [search, category, destinationId, categoryId, startDate, endDate, sort, startHour, endHour, lowerPrice, higherPrice, page]);
+    }, [router.asPath, page]);
 
     useEffect(() => {
         const params = {
@@ -78,25 +86,28 @@ const services = () => {
             setVenTraTaProducts(data);
         }
         );
-    }, [destinationId, categoryId]);
+    }, [router.asPath]);
 
     useEffect(() => {
+        if((startHour && endHour && startHour > endHour) || (startDate && endDate && startDate > endDate)) {
+            return;
+        }
         const params = {
             search: search,
             category: category,
             destinationId: destinationId,
             categoryId: categoryId,
-            startDate: startDate,
-            endDate: endDate,
+            startDate: startDate ? startDate.toISOString().split("T")[0] : startDate,
+            endDate: endDate ? endDate.toISOString().split("T")[0] : endDate,
             sort: sort,
-            startHour: startHour,
-            endHour: endHour,
+            startHour: startHour ? startHour.toISOString().split("T")[1] : startHour,
+            endHour: endHour ? endHour.toISOString().split("T")[1] : endHour,
             lowerPrice: lowerPrice,
             higherPrice: higherPrice,
             page: page,
         };
         const queryString = Object.keys(params).map((key) => key + '=' + params[key]).join('&');
-        router.push(`/services?${queryString}`);
+         router.push(`/services?${queryString}`);
     }, [search, category, destinationId, categoryId, startDate, endDate, sort, startHour, endHour, lowerPrice, higherPrice, page]);
 
 
@@ -126,9 +137,7 @@ const services = () => {
     }
         , [destinationId]);
 
-    useEffect(() => {
-        setIsLoading(categoryLoading);
-    }, [categoryLoading]);
+
 
     useEffect(() => {
         if(!destinationId) {
@@ -159,10 +168,18 @@ const services = () => {
         setDestinationId(id);
     }
 
+    const handleApplyPrice = () => {
+        setLowerPirce(fakeLowerPrice);
+        setHigherPrice(fakeHigherPrice);
+    }
+
+    const handleApplySearch = () => {
+        setSearch(fakeSearch);
+    }
+
   
 
     if (isLoading) return <Loading />;
-    if (categoryError) return <div>Something went wrong</div>;
 
     return (
         <Container>
@@ -174,8 +191,9 @@ const services = () => {
                     <TextInput
                         label="Search"
                         name="search"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        value={fakeSearch}
+                        onChange={(e) => setFakeSearch(e.target.value)}
+                        onApply={handleApplySearch}
                         placeholder="Search"
                         type="text"
                     />
@@ -205,19 +223,21 @@ const services = () => {
                         date={startDate}
                         setDate={setStartDate}
                         startDate={new Date()}
-                        label='Select Starting Time'
+                        label='Select Starting Date'
                     />
                 </div>
 
-                {startDate && (
-                    <div className="mb-4">
-                        <DatePicker
-                            date={endDate}
-                            setDate={setEndDate}
-                            startDate={startDate}
-                            label='Select End Time'
-                        />
-                    </div>
+                <div className="mb-4">
+                    <DatePicker
+                        date={endDate}
+                        setDate={setEndDate}
+                        startDate={startDate}
+                        label='Select End Date'
+                    />
+                </div>
+
+                {startDate > endDate && startDate && endDate && (
+                    <span className="text-red-500">End date should be greater than start date</span>
                 )}
 
                 <div className="mb-4">
@@ -229,24 +249,27 @@ const services = () => {
                     />
                 </div>
 
-                {startHour && (
-                    <div className="mb-4">
-                        <HourPicker
-                            hour={endHour}
-                            setHour={setEndHour}
-                            label={"End"}
-                            startHour={new Date(startHour)}
-                        />
-                    </div>
+                <div className="mb-4">
+                    <HourPicker
+                        hour={endHour}
+                        setHour={setEndHour}
+                        label={"End"}
+                        startHour={new Date(startHour)}
+                    />
+                </div>
+
+                {startHour > endHour && startHour && endHour && (
+                    <span className="text-red-500">End time should be greater than start time</span>
                 )}
 
                 <div className="mb-4">
                     <PricePicker
-                        lowerPrice={lowerPrice}
-                        setLowerPirce={setLowerPirce}
-                        higherPrice={higherPrice}
-                        setHigherPrice={setHigherPrice}
+                        lowerPrice={fakeLowerPrice}
+                        setLowerPirce={setFakeLowerPrice}
+                        higherPrice={fakeHigherPrice}
+                        setHigherPrice={setFakeHigherPrice}
                         label={"Price"}
+                        onApply={handleApplyPrice}
                     />
                 </div>
 
@@ -256,6 +279,15 @@ const services = () => {
                         setSort={setSort}
                         label={"Sort"}
                     />
+                </div>
+
+                <div className="mb-4">
+                    <button
+                        onClick={() => setShowAll(!showAll)}
+                        className="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded"
+                    >
+                        {showAll ? "Show less" : "Show all"}
+                    </button>
                 </div>
 
                
@@ -270,7 +302,7 @@ const services = () => {
                         </div>
                     </div>
                 )}
-                    <div className="grid grid-cols-4 gap-6 max-xs:grid-cols-1 max-xs:gap-4 grid-cols-service-cards">
+                    <div className="grid grid-cols-4 gap-6 max-xs:grid-cols-1 max-xs:gap-4 grid-cols-service-cards mb-2">
                         {venTraTaProducts?.slice(0, showAll ? venTraTaProducts?.length : 8).map((item, index) => {
                                 const netPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].net;
                                 const retailPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
@@ -290,7 +322,7 @@ const services = () => {
                             })}
                     </div>
                     {serviceList?.length > 0 && (
-                      <span className="text-2xl font-bold capitalize">New Services</span>
+                      <span className="text-2xl font-bold capitalize mt-2">New Services</span>
                     )}
 
                     <div className="grid grid-cols-4 gap-6 max-xs:grid-cols-1 max-xs:gap-4 grid-cols-service-cards mt-8 mb-8">

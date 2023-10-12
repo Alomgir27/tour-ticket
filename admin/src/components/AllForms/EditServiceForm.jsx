@@ -51,8 +51,10 @@ function EditServiceForm() {
       discount: services?.discount || "",
       activity_feature: services?.activity_feature || "",
       category: services?.category || "",
+      //tour_date format: 2021-09-30 make it 2021-09-30T00:00:00.000Z
       tour_date: services?.serviceDetailPackage?.tour_date ? new Date(services?.serviceDetailPackage?.tour_date) : "",
-      opening_hours: services?.serviceDetailPackage?.opening_hours ? new Date(services?.serviceDetailPackage?.opening_hours) : "",
+      //opening_hours format: 00:00:00.000Z make it 2021-09-30T00:00:00.000Z
+      opening_hours: services?.serviceDetailPackage?.opening_hours ? new Date(services?.serviceDetailPackage?.tour_date + "T" + services?.serviceDetailPackage?.opening_hours) : "",
       tour_type: services?.serviceDetailPackage?.tour_type || "",
       meeting_point: services?.serviceDetailPackage?.meeting_point || "",
       ticket_details: services?.serviceDetailPackage?.ticket_details || "",

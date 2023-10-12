@@ -1,14 +1,13 @@
+import React, { useEffect, useState } from "react";
 import { ProductsService } from "@/App/Services/Products/ProductsService";
+import { fetchBlogs } from "@/App/Repositories/Blogs/GetBlogs";
 import { BlogsService } from "@/App/Services/Blogs/BlogsService";
 import BlogContainer from "@/components/Index/BlogContainer";
 import CategoryCardContainer from "@/components/Index/CategoryCardContainer";
 import LocalProductsContainer from "@/components/Index/LocalProductsContainer";
 import TopPlace from "@/components/Index/TopPlace";
 import Loading from "@/components/Utils/Loading";
-import React, { useEffect } from "react";
-import { useState } from "react";
 import { useSelector } from "react-redux";
-
 
 function Index() {
     const { loading } = useSelector((state) => state.products);
@@ -16,7 +15,7 @@ function Index() {
     const { selectedDestination } = useSelector((state) => state.products);
     const { localProducts } = useSelector((state) => state.products);
     const { blogs } = useSelector((state) => state.blogs);
-    const { topBlogs } = useSelector((state) => state.blogs);   
+    const [topBlogs, setTopBlogs] = React.useState([]);
     
     
 
@@ -24,11 +23,22 @@ function Index() {
         if(products?.length > 0 || localProducts?.length > 0 || blogs?.length > 0) return;
         (async () => {
            await ProductsService.getInit();
-              await BlogsService.getInit();
-
+           await BlogsService.getInit();
         }
         )();
     }, []);
+
+    useEffect(() => {
+        const params = {
+            search: "",
+        }
+        fetchBlogs(params).then((data) => {
+            setTopBlogs(data?.data?.data);
+        }
+        );
+    }, []);
+
+
 
     const onDestinationChange = async (id) => {
         await ProductsService.getProductsByDestinationId(id);

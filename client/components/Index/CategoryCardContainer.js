@@ -2,9 +2,6 @@ import React, { useState, useEffect } from "react";
 import Container from "../Layout/Container";
 import CategoryCard from "../Utils/CategoryCard";
 import CategoryCardTitle from "./CategoryCardTitle";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import Link from "next/link";
 
 
 function CategoryCardContainer({ withBg, title, subtitle, products, onDestinationChange }) {

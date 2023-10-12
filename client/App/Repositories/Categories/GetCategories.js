@@ -1,17 +1,13 @@
 import { useState, useEffect } from "react";
-import { ApiAuth, ApiBase, Capabilities, ApiBaseMysql } from "@/Helper/ApiBase";
+import { ApiAuth, ApiBase, Capabilities } from "@/Helper/ApiBase";
 import axios from "axios";
 
 export const useGetCategories = () => {
   const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
 
 
   useEffect(() => {
     const fetchCategories = async () => {
-      setIsError(false);
-      setIsLoading(true);
 
       try {
         const response = await axios.get(`${ApiBase}/suppliers`, {
@@ -24,16 +20,15 @@ export const useGetCategories = () => {
         });
         setData(response.data);
       } catch (error) {
-        setIsError(true);
+        console.log(error);
       }
 
-      setIsLoading(false);
     };
 
     fetchCategories();
   }, []);
 
-  return { data, isLoading, isError };
+  return { data };
 };
 
 

@@ -20,7 +20,7 @@ const HourPicker = ({ label, startHour,  hour, setHour }) => {
                     aria-expanded={isSectionOpen}
                 >
                     <span className="font-medium text-gray-900">Hour of the day (24h)</span>
-                    <span className="ml-2 flex items-center text-red-600"> {hour ? hour.toLocaleTimeString() : `Select ${label} hour`}</span>
+                    <span className="ml-2 flex items-center text-red-600"> {hour ? hour.toLocaleTimeString() : `Select hour`}</span>
                     <span className="ml-6 flex items-center">
                         {isSectionOpen ? (
                             <svg
@@ -63,6 +63,11 @@ const HourPicker = ({ label, startHour,  hour, setHour }) => {
                             placeholderText={`Select ${label} hour`}
                             className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
                         />
+                        {hour &&
+                        <button type="button" className="w-full bg-red-600 text-white py-2 px-4 rounded-md" onClick={() => setHour(null)}>
+                            Clear
+                        </button>
+                        }
                     </div>
                 </div>
             </div>

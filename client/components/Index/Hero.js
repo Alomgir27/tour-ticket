@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import Container from "../Layout/Container";
 import SearchSvg from "../Svg/SearchSvg";
 import Image from "next/image";
 import { WhereAreYouGoingSearchBox } from "../Utils/styledComponents";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 function Hero() {
+    const [search, setSearch] = useState("");
+
     return (
         <div className="relative z-10 w-full">
             <Container>
@@ -24,7 +28,7 @@ function Hero() {
                             {/* Search Input */}
                             {/* TODO: Where Are you going api implementation */}
                             <div className="flex justify-center lg:justify-start">
-                                <WhereAreYouGoingSearchBox />
+                                <WhereAreYouGoingSearchBox search={search} onChange={(e) => setSearch(e.target.value)}/>
                             </div>
                         </div>
                         <div className="flex flex-col max-md:hidden gap-4 items-center lg:items-start mb-10">

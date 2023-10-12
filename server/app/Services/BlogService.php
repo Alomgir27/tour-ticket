@@ -125,9 +125,14 @@ class BlogService
         }
     }
 
-    public function getTopBlogs(){
+    public function getTopBlogs($search){
         try{
-            $blog = Blog::where('is_top_blog', 1)->get();
+
+            $query = Blog::select('id', 'title', 'thumbnail', 'image', 'tag', 'short_desc', 'created_at', 'details', 'is_top_blog')->where('is_top_blog', 1);
+            if ($search) {
+                $query->where('title', 'LIKE', '%' . $search . '%');
+            }
+            $blog = $query->orderBy('id', 'desc')->paginate(10);
             return $this->apiResponses->sendResponse($blog, 'Top Blog retrieved successfully');
         } catch (\Throwable $th) {
             return $this->apiResponses->sendError($th->getMessage(), [], 500);

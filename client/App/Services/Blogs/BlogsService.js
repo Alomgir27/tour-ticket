@@ -8,12 +8,7 @@ export const BlogsService = {
         const res = await BlogsRepo.getBlogs();
         if(res?.data?.data?.length > 0){
             store.dispatch(blogsActions.setBlogs(res?.data?.data));
-        }
-        const resTop = await BlogsRepo.getTopBlogs();
-        if(resTop?.data?.length > 0){
-
-            store.dispatch(blogsActions.setTopBlogs(resTop?.data));
-        }
+        }        
         store.dispatch(blogsActions.setLoading(false));
         return null;
     }

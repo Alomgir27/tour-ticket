@@ -27,10 +27,12 @@ const servicesService = {
     for (let i = 0; i < data.detail_images.length; i++) {
       formData.append("detail_images[]", data.detail_images[i]);
     }
-    formData.append("tour_date", data.tour_date);
+    // make YYYY-MM-DD
+    formData.append("tour_date", data.tour_date ? data.tour_date.toISOString().split("T")[0] : null);
     formData.append("tour_type", data.tour_type);
     formData.append("meeting_point", data.meeting_point);
-    formData.append("opening_hours", data.opening_hours);
+    // make HH:MM:SS
+    formData.append("opening_hours", data.opening_hours ? data.opening_hours.toISOString().split("T")[1] : null);
     formData.append("ticket_details", data.ticket_details);
 
     formData.append("full_description", data.full_description);
@@ -57,10 +59,10 @@ const servicesService = {
     for (let i = 0; i < data?.detail_images?.length; i++) {
       formData.append("detail_images[]", data?.detail_images[i]);
     }
-    formData.append("tour_date", data.tour_date);
+    formData.append("tour_date", data.tour_date ? data.tour_date.toISOString().split("T")[0] : null);
     formData.append("tour_type", data.tour_type);
     formData.append("meeting_point", data.meeting_point);
-    formData.append("opening_hours", data?.opening_hours);
+    formData.append("opening_hours", data?.opening_hours ? data?.opening_hours.toISOString().split("T")[1] : null);
     formData.append("ticket_details", data.ticket_details);
 
     formData.append("full_description", data.full_description);

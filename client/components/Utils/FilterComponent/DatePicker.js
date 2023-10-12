@@ -57,6 +57,11 @@ const TimeComponent = ({ label,  startDate, date, setDate }) => {
                             placeholderText="Select a date"
                             className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
                         />
+                        {date &&
+                        <button type="button" className="w-full bg-red-600 text-white py-2 px-4 rounded-md" onClick={() => setDate(null)}>
+                            Clear
+                        </button>
+                        }
                     </div>
                 </div>
             </div>

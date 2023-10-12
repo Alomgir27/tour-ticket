@@ -44,8 +44,9 @@ class BlogController extends Controller
     /**
      * Display all the top_blog
      */
-    public function topBlogs(){
-        return $this->blogService->getTopBlogs();
+    public function topBlogs(Request $request)
+    {   $search = $request->input('search');
+        return $this->blogService->getTopBlogs($search);
     }
 
     /**

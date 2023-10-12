@@ -31,7 +31,7 @@ function Header() {
                             <Link href={"/blogs"}>
                                 <li className="max-lg:min-w-fit">Blog</li>
                             </Link>
-                            <Link href={"/#"}>
+                            <Link href={"/sales_point#"}>
                                 <li className="max-lg:min-w-fit">Sales Point</li>
                             </Link>
                         </ul>
