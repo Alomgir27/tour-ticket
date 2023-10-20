@@ -11,6 +11,7 @@ use App\Http\Controllers\API\ServiceController;
 use App\Http\Controllers\API\ServiceOverviewController;
 use App\Http\Controllers\API\WhatIncludeController;
 use App\Http\Controllers\UploadController;
+use App\Http\Controllers\StoreController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
@@ -119,17 +120,26 @@ Route::controller(PurchaseHistoryController::class)->group(function () {
 });
 
 
-Route::get('createAdmin', function () {
-    // Use Laravel's route function to create a request to the 'register' route
-    $response = Route::dispatch(Request::create('/api/register', 'POST', [
-        'name' => 'admin',
-        'email' => 'admin@gmail.com',
-        'password' => 'admin123',
-        'role' => '1',
-        'phone' => '123456789',
-        'address' => 'admin address',
-        'profile' => 'admin profile',
-    ]));
-
-    return $response;
+Route::controller(StoreController::class)->group(function () {
+    Route::get('store', 'index');
+    Route::post('store', 'store');
+    Route::get('store/{id}', 'show');
+    Route::patch('store/{id}', 'update');
+    Route::delete('store/{id}', 'destroy');
 });
+
+
+// Route::get('createAdmin', function () {
+//     // Use Laravel's route function to create a request to the 'register' route
+//     $response = Route::dispatch(Request::create('/api/register', 'POST', [
+//         'name' => 'admin',
+//         'email' => 'admin@gmail.com',
+//         'password' => 'admin123',
+//         'role' => '1',
+//         'phone' => '123456789',
+//         'address' => 'admin address',
+//         'profile' => 'admin profile',
+//     ]));
+
+//     return $response;
+// });

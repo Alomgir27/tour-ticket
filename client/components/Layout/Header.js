@@ -36,16 +36,14 @@ function Header() {
                             </Link>
                         </ul>
                         <div
-                            className={`${
-                                router.pathname != "/" ? "gap-6" : "lg:gap-[45px] max-lg:gap-[14px]"
-                            } flex-i-center max-lg:!justify-between `}
+                            className={`${router.pathname != "/" ? "gap-6" : "lg:gap-[45px] max-lg:gap-[14px]"
+                                } flex-i-center max-lg:!justify-between `}
                         >
                             <div
-                                className={`flex-i-center gap-6 max-lg:gap-[14px] ${
-                                    router.pathname != "/"
+                                className={`flex-i-center gap-6 max-lg:gap-[14px] ${router.pathname != "/"
                                         ? "bg-rose-50 h-[38px] justify-center w-[136px] rounded-lg"
                                         : ""
-                                }`}
+                                    }`}
                             >
                                 {router.pathname != "/" && (
                                     <div className="w-5 h-5">
@@ -53,9 +51,9 @@ function Header() {
                                     </div>
                                 )}
                                 <FavouriteSvg />
-                                <Link href={"/cart"}>
+                                {/* <Link href={"/cart"}>
                                     <CartSvg />
-                                </Link>
+                                </Link> */}
                             </div>
                             {/* Lang and flag */}
                             {/* <div
@@ -76,7 +74,7 @@ function Header() {
                                         <img className="w-5 h-5 rounded-full" src="/assets/us.png" alt="USA" />
                                         <p>EN</p>
                                         <button onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                                           <DownArrowSvg />
+                                            <DownArrowSvg />
                                         </button>
                                         {isMenuOpen && (
                                             <button onClick={() => signOut()} className="absolute top-20  w-[120px] h-[40px] flex justify-center items-center gap-2.5 flex-col justify-center items-center gap-2.5 flex-col bg-[#F9F9F9]">
@@ -90,8 +88,8 @@ function Header() {
                                     Log in
                                 </button>
                             )}
-                           
-                                        
+
+
 
                         </div>
                     </div>

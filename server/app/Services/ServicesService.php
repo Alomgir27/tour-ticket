@@ -367,9 +367,11 @@ class ServicesService
 
     public function getService($id){
         try {
-            $service = Service::with(['images','whatIncludes','serviceExp','serviceOverview'])->findOrFail($id);
-            $serviceDetailPackage = ServiceDetailPackage::where('service_id',$id)->first();
-            $service->serviceDetailPackage = $serviceDetailPackage;
+            $service = Service::with(['whatIncludes','serviceExp','serviceOverview','serviceDetailPackage','detailImages'])->findOrFail($id);
+            $service->images = '/assets/services/thumb/' . $service->images;
+            foreach ($service->detailImages as $detailImage) {
+                $detailImage->service_image = '/assets/services/detail/' . $detailImage->service_image;
+            }
             return $this->apiResponses->sendResponse($service, 'Service retrieved successfully');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return $this->apiResponses->sendError('Service not found', [], 404);
@@ -377,6 +379,7 @@ class ServicesService
             // Handle any other unexpected errors here if needed.
             return $this->apiResponses->sendError('An error occurred while processing the request', [], 500);
         }
+       
     }
 
     public function deleteService($id) {

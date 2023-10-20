@@ -1,5 +1,12 @@
 // import servicesService from "@/App/Services/Service/servicesService";
-import { ApiBase } from "@/Helper/ApiBase";
+import {
+    ApiBase,
+    ApiAuth,
+    Capabilities,
+    ApiBaseMysql
+} from "@/Helper/ApiBase";
+import { ProductsService } from "@/App/Services/Products/ProductsService";
+import { BlogsService } from "@/App/Services/Blogs/BlogsService";
 import CheckAvailabilityCard from "@/components/Details/CheckAvailabilityCard";
 import HighlightList from "@/components/Details/HighlightList";
 import ImportantInfoList from "@/components/Details/ImportantInfoList";
@@ -19,29 +26,18 @@ import ExperianceCard from "@/components/Utils/ExperianceCard";
 import IconList from "@/components/Utils/IconList";
 import Loading from "@/components/Utils/Loading";
 import OverviewCard from "@/components/Utils/OverviewCard";
+import LocalProductCard from "@/components/Utils/LocalProductCard";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import NextImage from "@/components/Utils/NextImage";
 import "react-calendar/dist/Calendar.css";
 
-const index = ({ serviceData }) => {
+const index = ({ serviceData, isVentrata }) => {
     console.log("serviceData", serviceData);
 
-    // const {
-    //     id,
-    //     title,
-    //     tags,
-    //     discount,
-    //     price,
-    //     short_description,
-    //     actual_price,
-    //     images,
-    //     activity_feature,
-    //     what_includes,
-    //     service_exp,
-    //     service_overview,
-    // } = props.service_details;
+
     const {
         id,
         internalName,
@@ -58,9 +54,7 @@ const index = ({ serviceData }) => {
         deliveryFormats,
         deliveryMethods,
         settlementMethods,
-        redemptionMethod,
         options,
-        title,
         country,
         location,
         subtitle,
@@ -73,35 +67,55 @@ const index = ({ serviceData }) => {
         defaultCurrency,
         availableCurrencies,
         pricingPer,
+
+        title,
+        activity_feature,
+        actual_price,
+        category,
+        detail_images,
+        images,
+        price,
+        service_detail_package,
+        service_exp,
+        service_overview,
+        short_description,
+        tags,
+        what_includes
     } = serviceData;
-    
+
 
     // Now you have individual variables with the corresponding values from the object.
 
     const router = useRouter();
-    const [selectedImage, setSelectedImage] = useState( "/assets/details_default_cover.jpeg");
+    const [selectedImage, setSelectedImage] = useState(null);
 
     const netPrice = serviceData?.options?.[0]?.units?.[0]?.pricingFrom?.[0].net;
     const retailPrice = serviceData?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
-    const discount = Math.round(((retailPrice - netPrice) / retailPrice) * 100);
+    const discount = isVentrata ? Math.round(((retailPrice - netPrice) / retailPrice) * 100) : parseFloat(serviceData?.discount);
 
-    // const { loading: loadingAnotherServices, data } = useSelector((state) => state.services);
+    const { products } = useSelector((state) => state.products);
+    const { localProducts } = useSelector((state) => state.products);
+
 
     // OTHER SERVICES
     useEffect(() => {
-        // servicesService.getList();
+        (async () => {
+            if (products?.length > 0 || localProducts?.length > 0) return;
+            await ProductsService.getInit();
+            await BlogsService.getInit();
+        }
+        )();
     }, []);
 
     // UPDATE IMAGE WHEN ROUTE CHANGES
-    // useEffect(() => {
-    //     if (images.length) {
-    //         setSelectedImage(images[0]);
-    //     } else {
-    //         setSelectedImage({
-    //             service_image: "/assets/404image.jpg",
-    //         });
-    //     }
-    // }, [router.query.service_id]);
+    useEffect(() => {
+        if (router.query.service_id) {
+            if (isVentrata) {
+                setSelectedImage(coverImageUrl);
+            }
+
+        }
+    }, [router.query.service_id]);
 
     // Prevents error when service_exp is empty
     // let services_exps = {};
@@ -109,21 +123,7 @@ const index = ({ serviceData }) => {
     //     services_exps = service_exp[0];
     // }
 
-    // const serviceList = data?.data?.data; // WILL GOTO randomServicesList
-    // pick random 4 services from serviceList within it's length
-    const randomServices = (arr, n) => {
-        if (!arr || n > arr.length) return arr;
 
-        const shuffledArr = arr.slice();
-        for (let i = shuffledArr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffledArr[i], shuffledArr[j]] = [shuffledArr[j], shuffledArr[i]];
-        }
-
-        return shuffledArr.slice(0, n);
-    };
-
-    // const randomServicesList = randomServices(serviceList, 4);
 
     return (
         <div className=" flex flex-col gap-10 sm:gap-16 md:gap-32">
@@ -139,8 +139,9 @@ const index = ({ serviceData }) => {
                                     </h2>
                                     <div className="flex items-center justify-between">
                                         <div className="gap-2 lg:gap-6  inline-flex">
-                                            <CategoryTag title={subtitle} bgColor={"bg-blue-100"} />
-                                            {/* <CategoryTag title={"Green Line"} bgColor={"bg-green-400"} /> */}
+                                            <CategoryTag title={isVentrata ? subtitle : tags} bgColor={"bg-red-500"} />
+                                            <CategoryTag title={isVentrata ? "Ventrata" : category}
+                                                bgColor={"bg-green-400"} />
                                         </div>
                                         <div className="gap-2 lg:gap-6 flex items-center font-base capitalize">
                                             <div className="items-center gap-2 flex cursor-pointer">
@@ -158,17 +159,28 @@ const index = ({ serviceData }) => {
                                     <div className=" object-cover h-full overflow-hidden rounded-lg">
                                         {/* Large Image */}
 
-                                        <Image
-                                            src={selectedImage}
-                                            alt="_"
-                                            width={600}
-                                            height={400}
-                                            className="w-full"
-                                        />
+                                        {isVentrata ? (
+                                            <Image
+                                                src={selectedImage ? selectedImage : "/assets/details_default_cover.jpeg"}
+                                                alt="_"
+                                                width={600}
+                                                height={400}
+                                                className="w-full"
+                                            />
+                                        ) : (
+                                            <NextImage
+                                                src={selectedImage ? selectedImage : images}
+                                                alt="_"
+                                                width={600}
+                                                height={400}
+                                                className="w-full"
+                                            />
+                                        )}
+                                        {console.log("selectedImage", selectedImage)}
                                     </div>
                                     <div className="flex items-center gap-3">
                                         {/* TODO: Image thumbs for service details */}
-                                        {galleryImages?.map((item, index) => (
+                                        {isVentrata ? galleryImages?.map((item, index) => (
                                             <div
                                                 key={index}
                                                 className="overflow-hidden rounded-lg "
@@ -182,14 +194,41 @@ const index = ({ serviceData }) => {
                                                     className="w-[140px]"
                                                 />
                                             </div>
+                                        )) : detail_images?.map((item, index) => (
+                                            <div
+                                                key={index}
+                                                className="overflow-hidden rounded-lg "
+                                                onClick={() => setSelectedImage(item?.service_image)}
+                                            >
+                                                <NextImage
+                                                    src={item?.service_image}
+                                                    alt="_"
+                                                    width={600}
+                                                    height={400}
+                                                    className="w-[140px]"
+                                                />
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
-                                <p className="">{shortDescription}</p>
+                                <p className="">{isVentrata ? shortDescription : short_description}</p>
                             </div>
                             <div className="my-8 flex flex-col gap-4">
                                 {/* TODO: Overview Api theke pawa jaynai */}
                                 <h2 className=" text-2xl font-bold capitalize">Overview</h2>
+                                <div className="flex flex-col gap-4">
+                                    {!isVentrata &&
+                                        <OverviewCard
+                                            key={index}
+                                            wFull
+                                            icon={<SafeGuardSvg />}
+                                            backgroundColor={"bg-orange-50"}
+                                            liteBg={"bg-red-200"}
+                                            title={service_overview.service_overviews}
+                                            subtitle={tags}
+                                        />
+                                    }
+                                </div>
                                 <div className="grid sm:grid-cols-2 gap-4">
                                     <OverviewCard
                                         wFull
@@ -244,12 +283,12 @@ const index = ({ serviceData }) => {
                             </div>
                             <div className="flex flex-col gap-4 my-8" id="package_options">
                                 <h2 className=" text-2xl font-bold capitalize">Package options</h2>
-                                <PackageOptions options={options} />
+                                <PackageOptions options={options} isVentrata={isVentrata} item={serviceData} />
                             </div>
                             <div className="flex flex-col gap-4 my-8">
                                 <h2 className=" text-2xl font-bold capitalize">What’s Included</h2>
                                 <div className="flex flex-col gap-4">
-                                    {inclusions?.map((item, index) => (
+                                    {isVentrata && inclusions?.map((item, index) => (
                                         <IconList key={index} title={item} />
                                     ))}
                                 </div>
@@ -258,18 +297,19 @@ const index = ({ serviceData }) => {
                                 <h2 className=" text-2xl font-bold capitalize">Experience</h2>
                                 <div className="p-2.5 bg-slate-100 rounded-2xl flex-col gap-2.5 inline-flex">
                                     <>
-                                        <ExperianceCard title={"Full description"} description={description} />
-                                        {/* TODO: highlights array from api */}
-                                        <ExperianceCard title={"Highlights"} description={"highlights"} />
-                                        <ExperianceCard
-                                            title={"Important information"}
-                                            description={"important_information"}
-                                        />
+                                        <ExperianceCard title={"ticket_details"} description={isVentrata ? description : service_detail_package?.ticket_details} />
+                                        {!isVentrata && service_exp?.map((item, index) => (
+                                            <div key={index} className="flex flex-col gap-4 my-8 mx-4">
+                                                <p className="text-xl font-bold capitalize">{item?.highlights}</p>
+                                                <p className="">{item?.full_description}</p>
+                                                <p className="">{item?.important_information}</p>
+                                            </div>
+                                        ))}
                                     </>
                                 </div>
                             </div>
 
-                            {/* <div className="flex flex-col gap-4 my-8 ">
+                            <div className="flex flex-col gap-4 my-8 ">
                                 <h2 className=" text-2xl font-bold capitalize">Meeting point</h2>
                                 <OverviewCard
                                     wFull
@@ -279,36 +319,43 @@ const index = ({ serviceData }) => {
                                     title={"Name Of Meeting Point"}
                                     subtitle={"Via Giuseppe Massara,22, 24123 Rome, Italia"}
                                 />
-                            </div> */}
+                            </div>
                         </div>
                         <div className=" mt-10 lg:mt-[10.5rem] mx-auto">
-                            <CheckAvailabilityCard price={retailPrice} actual_price={netPrice} />
+                            <CheckAvailabilityCard
+                                price={isVentrata ? retailPrice : price}
+                                actual_price={isVentrata ? netPrice : actual_price}
+                                discount={discount}
+                            />
                         </div>
                     </div>
                 </div>
                 <div className="flex flex-col gap-9">
                     <h2 className=" text-2xl font-bold capitalize">You Can our another services</h2>
                     {/* TODO: ENABLE RANDOM SERVICE */}
-                    {/* <div className="grid grid-cols-service-cards gap-5">
-                        {loadingAnotherServices ? (
-                            <Loading />
-                        ) : (
-                            randomServicesList?.map((item, index) => {
-                                return (
-                                    <CategoryCard
-                                        key={index}
-                                        link={`/services/${item?.id}`}
-                                        img={item?.images}
-                                        title={item?.title}
-                                        price={item?.price}
-                                        actual_price={item?.actual_price}
-                                        discount={item?.discount}
-                                        tags={item?.tags}
-                                    />
-                                );
-                            })
-                        )}
-                    </div> */}
+                    <div className="grid grid-cols-4 gap-6 max-xs:grid-cols-1 max-xs:gap-4 grid-cols-service-cards">
+                        {products?.slice(0, 4).map((item, index) => {
+                            const netPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].net;
+                            const retailPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
+                            const discount = Math.round(((retailPrice - netPrice) / retailPrice) * 100);
+
+                            return (
+                                <CategoryCard
+                                    key={item.internalName}
+                                    link={`/services/${item?.id}`}
+                                    img={item?.coverImageUrl ? item?.coverImageUrl : item?.bannerImageUrl ? item?.bannerImageUrl : item?.galleryImages?.[0]?.url ?? ""}
+                                    title={item?.title}
+                                    price={retailPrice}
+                                    actual_price={netPrice}
+                                    discount={Math.abs(discount)}
+                                    tags={item?.subtitle}
+                                />
+                            );
+                        })}
+                        {localProducts?.slice(0, 4).map((item, index) => (
+                            <LocalProductCard key={index} item={item} />
+                        ))}
+                    </div>
                 </div>
             </Container>
             <BlogContainer
@@ -341,20 +388,34 @@ const index = ({ serviceData }) => {
 export async function getServerSideProps(context) {
     // get id from query params
     const { service_id } = context.query;
-    const url = `${process.env.VENTRATA_API}/products/${service_id}`;
+    let url2 = `${process.env.VENTRATA_API}/products/${service_id}`;
+    let url = `${ApiBaseMysql}/services/${service_id}`;
+
+    //if service_id is a uuid then use Ventrata API
+    // else use our own API
+    if (service_id.length > 20) {
+        url = url2;
+    }
+
     // Define your authorization token here
     const authToken = process.env.VENTRATA_AUTH_KEY;
 
     const headers = {
         Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+        "Octo-Capabilities": Capabilities,
+
     };
 
     const res = await fetch(url, { headers });
     const data = await res.json();
 
+
+
     return {
         props: {
-            serviceData: data,
+            serviceData: service_id.length > 20 ? data : data.data,
+            isVentrata: service_id.length > 20,
         },
     };
 }

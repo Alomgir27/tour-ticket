@@ -1,8 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { loadStripe } from '@stripe/stripe-js';
 
-const PaymentDetails = () => {
+
+const PaymentDetails = ({ firstName, setFirstName, lastName, setLastName, email, setEmail, phone, setPhone, countryCode, setCountryCode, setStep }) => {
+
+  useEffect(() => {
+    const handlePayment = async () => {
+      // Load the Stripe.js script
+      const stripe = await loadStripe('pk_test_51O2n9OGD1q5uAn9WWDG2Ky7oYN527XM2OEqV2OOElz5dzcX5cHuw5DePsOEeC2kgJUmd9JoHhwKQPZBC63ooyqc300nAjS5guP');
+
+
+      const redirrect = await stripe.redirectToCheckout({
+        lineItems: [
+          // Replace with the ID of your price
+          { price: 'price_1O2nVkGD1q5uAn9WaaJlpHwe', quantity: 1 },
+        ],
+        mode: 'subscription',
+        successUrl: 'https://example.com/success',
+        cancelUrl: 'https://example.com/cancel',
+      });
+
+      if (redirrect.error) {
+        alert(redirrect.error.message);
+      }
+    };
+
+    handlePayment();
+  }, []);
+
+
+
+
+
+
   return (
-    <div className="w-[816px] h-[874px] flex-col justify-center items-center gap-6 inline-flex">
+    <div className="w-[816px] h-[874px] flex-col justify-center items-center gap-6 inline-flex" id="payment-form" >
       <div className="self-stretch h-[165px] pb-6 border border-zinc-100 flex-col justify-start items-center gap-6 flex">
         <div className="self-stretch h-[141px] flex-col justify-start items-start gap-6 flex">
           <div className="self-stretch justify-between items-center gap-6 inline-flex">
@@ -12,17 +44,21 @@ const PaymentDetails = () => {
           </div>
           <div className="self-stretch px-5 py-[18px] bg-white rounded-md border border-zinc-100 justify-start items-center gap-6 inline-flex">
             <div className="grow shrink basis-0 flex-col justify-start items-start gap-3 inline-flex">
-              <div className="">
-                MD Ahosan Habib
-              </div>
-              <div className="">
-                (+39) 3644627260
-              </div>
-              <div className="">
-                ahosanhabib@gmail.com
+              <p className="text-[16px] font-semibold">
+                {firstName} {lastName}
+              </p>
+              <p className="text-[16px] font-semibold">
+                {countryCode} {phone}
+              </p>
+              <div className="grow shrink basis-0 flex-col justify-start items-start gap-3 inline-flex">
+                <p className="text-[16px] font-semibold">
+                  {email}
+                </p>
               </div>
             </div>
-            <div className="text-red-500 text-[16px] font-semibold">Edit</div>
+            <div className="text-red-500 text-[16px] font-semibold" onClick={() => setStep(1)}>
+              Edit
+            </div>
           </div>
         </div>
       </div>
@@ -139,9 +175,10 @@ const PaymentDetails = () => {
             </div>
           </div>
         </div>
-        <div className="px-6 py-3.5 bg-red-500 rounded-md justify-center items-center gap-2.5 inline-flexn ext-center text-white capitalize leading-none">
+        {/* <div className="px-6 py-3.5 bg-red-500 rounded-md justify-center items-center gap-2.5 inline-flexn ext-center text-white capitalize leading-none">
             Confirm payment
-        </div>
+        </div> */}
+
       </div>
     </div>
   );

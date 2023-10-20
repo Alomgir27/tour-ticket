@@ -3,7 +3,7 @@ import OverviewCard from "../Utils/OverviewCard";
 import CancelSvg from "../Svg/CancelSvg";
 import Link from "next/link";
 
-function CheckAvailabilityCard({ price, actual_price }) {
+function CheckAvailabilityCard({ price, actual_price, discount }) {
     return (
         <div className="sticky top-8 max-w-[400px] lg:w-[400px] h-fit p-2.5 bg-slate-100 rounded-lg flex-col justify-start items-start inline-flex ">
             <div className="h-fit p-3 bg-white rounded-lg flex-col justify-start items-center gap-8 flex">
@@ -16,11 +16,15 @@ function CheckAvailabilityCard({ price, actual_price }) {
                             <span className="text-slate-800 text-opacity-40 text-base leading-none font-normal line-through capitalize">
                                 US$ {price}
                             </span>
+
                         </div>
                         <div className="text-red-500 text-2xl font-extrabold leading-none capitalize">
                             US$ {actual_price}
                         </div>
                         <div className="capitalize text-base leading-none">Per person</div>
+                        <p className="text-slate-800 text-base font-semibold leading-none capitalize">
+                            Save {discount}%{" "}
+                        </p>
                     </div>
                     <div className=" transition-colors bg-red-500 hover:shadow-red-100 hover:shadow-lg rounded-lg justify-center items-center cursor-pointer">
                         <Link

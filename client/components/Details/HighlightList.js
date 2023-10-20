@@ -1,6 +1,6 @@
 import React from "react";
 
-function HighlightList() {
+function HighlightList({ list }) {
     return (
         <ul className="list-disc flex flex-col gap-2.5 ml-4">
             <li>Discover all three branches of the Chicago River with your guide, an expert in architecture</li>

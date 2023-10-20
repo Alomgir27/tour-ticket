@@ -1,9 +1,12 @@
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { Dropdown, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisVertical } from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import Link from "next/link";
 import THSort from "../TableSort/THSort";
+import axios from "axios";
 
 const typeColorMap = {
   normal: "#aa9",
@@ -44,6 +47,34 @@ const TypeLabel = ({ type }) => (
 
 const DashboardList = (props) => {
   const { serviceList } = props;
+  const router = useRouter();
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const params = {
+        localDate: "2021-09-01",
+        localDateStart: "2021-09-01",
+        localDateEnd: "2025-09-01",
+        productId: "20ef1799-7020-484b-9fb5-905ec5bb5444",
+      }
+
+
+      const res = await fetch(`https://api.ventrata.com/octo/bookings/20ef1799-7020-484b-9fb5-905ec5bb5444`, {
+        headers: {
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_VENTRATA_API_KEY}`,
+          "Octo-Capabilities": process.env.NEXT_PUBLIC_VENTRATA_CAPABILITIES,
+        },
+        method: "POST",
+        body: JSON.stringify(params),
+      });
+      const json = await res.json();
+      console.log(json);
+      setProducts(json);
+    })();
+  }
+    , []);
+
 
   return (
     <Table responsive bordered hover>

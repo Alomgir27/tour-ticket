@@ -33,6 +33,21 @@ export const ProductsRepo = {
         });
         return res;
     },
+    bookNow: async (data) => {
+        const res = await request({
+            axiosConfig: {
+                method: "POST",
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    'Octo-Capabilities': Capabilities,
+                    Authorization: `Bearer ${ApiAuth}`,
+                },
+                url: `${ApiBase}/bookings`,
+                data: data,
+            },
+        });
+        return res;
+    },
     getCategoryInfo: async () => {
         const res = await request({
             axiosConfig: {
@@ -104,5 +119,5 @@ export const ProductsRepo = {
         });
         return res;
     }
-        
+
 };
