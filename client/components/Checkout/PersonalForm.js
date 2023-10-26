@@ -1,24 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const PersonalForm = ({ firstName, setFirstName, lastName, setLastName, email, setEmail, phone, setPhone, countryCode, setCountryCode }) => {
-    const [countryCodes, setCountryCodes] = useState([]);
+const PersonalForm = ({ firstName, setFirstName, lastName, setLastName, email, setEmail, phone, setPhone, countryCode, setCountryCode, countryCodes }) => {
 
-    useEffect(() => {
-        // Fetch the list of country codes from an API
-        axios.get('https://restcountries.com/v2/all')
-            .then((response) => {
-                const codes = response.data.map(country => ({
-                    name: country.name,
-                    callingCode: `+${country.callingCodes[0]}`,
-                }));
-                setCountryCodes(codes);
-                console.log(codes);
-            })
-            .catch((error) => {
-                console.error('Error fetching country codes:', error);
-            });
-    }, []);
     return (
         <div className="w-full pb-6 border-b border-zinc-100 flex-col justify-start items-center gap-6 flex">
             <div className="self-stretch flex-col justify-start items-start gap-6 flex">

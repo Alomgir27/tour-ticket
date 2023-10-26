@@ -1,44 +1,181 @@
 import React, { useState, useEffect } from "react";
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { useRouter } from "next/router";
+import axios from "axios";
+import { ApiAuth, ApiBase, Capabilities } from "@/Helper/ApiBase";
+import { ApiBaseMysql } from "@/Helper/ApiBase";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 
-const PaymentDetails = ({ firstName, setFirstName, lastName, setLastName, email, setEmail, phone, setPhone, countryCode, setCountryCode, setStep }) => {
+const CheckoutForm = () => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const router = useRouter();
+
+  const [data, setData] = useState(null);
+  const [booking, setBooking] = useState(null);
 
   useEffect(() => {
-    const handlePayment = async () => {
-      // Load the Stripe.js script
-      const stripe = await loadStripe('pk_test_51O2n9OGD1q5uAn9WWDG2Ky7oYN527XM2OEqV2OOElz5dzcX5cHuw5DePsOEeC2kgJUmd9JoHhwKQPZBC63ooyqc300nAjS5guP');
+    if (router.query.data) {
+      setData(JSON.parse(router.query.data));
+      console.log(JSON.parse(router.query.data));
+    }
+  }, [router.query.data]);
 
-
-      const redirrect = await stripe.redirectToCheckout({
-        lineItems: [
-          // Replace with the ID of your price
-          { price: 'price_1O2nVkGD1q5uAn9WaaJlpHwe', quantity: 1 },
-        ],
-        mode: 'subscription',
-        successUrl: 'https://example.com/success',
-        cancelUrl: 'https://example.com/cancel',
+  const sendEmail = async (email, subject, text) => {
+    try {
+      const response = await fetch('/api/sendEmail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: email,
+          subject: subject,
+          text: text
+        }),
       });
 
-      if (redirrect.error) {
-        alert(redirrect.error.message);
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.message);
+      } else {
+        console.error('Email sending failed');
       }
-    };
-
-    handlePayment();
-  }, []);
-
-
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
 
 
+  useEffect(() => {
+    if (data) {
+      const bookingId = data.bookingId;
+      const bookingUrl = `${ApiBase}/bookings/${bookingId}`;
+      axios.get(bookingUrl, {
+        headers: {
+          'Authorization': `Bearer ${ApiAuth}`,
+          'Content-Type': 'application/json',
+          'Octo-Capabilities': Capabilities,
+        }
+      }).then((res) => {
+        setBooking(res.data);
+        console.log(res);
+      }).catch((err) => {
+        console.log(err);
+      });
+    }
+  }, [data]);
+
+
+
+
+
+
+
+  const handleStripePayment = async (event) => {
+    event.preventDefault();
+    if (!booking) {
+      console.log('Booking not found');
+      return;
+    }
+
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: elements.getElement(CardElement),
+    });
+
+    if (!error) {
+      console.log('Stripe Payment Success!', paymentMethod);
+      const bookingId = booking.uuid;
+      console.log(data, booking.pricing);
+      const amount = booking.pricing.retail;
+      if (!amount) return alert('Amount not found')
+      const bookingUrl = `${ApiBase}/bookings/${bookingId}/confirm`;
+      axios.post(bookingUrl, {
+        cardPayment: {
+          gateway: 'stripe',
+          stripe: {
+            version: 'latest',
+            paymentIntent: {
+              id: paymentMethod.id,
+              publishableKey: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+              clientSecret: process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY,
+              amount: amount,
+              currency: "USD"
+            }
+          }
+        },
+        resellerReference: process.env.NEXT_PUBLIC_STRIPE_RESLLER_REFERENCE,
+        contact: {
+          fullName: booking.contact.fullName,
+          emailAddress: booking.contact.emailAddress,
+          phoneNumber: booking.contact.phoneNumber,
+          locales: ['en-US', 'en', 'en-GB'],
+          country: booking.contact.country
+        }
+      }, {
+        headers: {
+          'Authorization': `Bearer ${ApiAuth}`,
+          'Content-Type': 'application/json',
+          'Octo-Capabilities': Capabilities,
+        }
+      }).then(async (res) => {
+        console.log(res);
+        await sendEmail(booking.contact.emailAddress, "Online Ticket", res?.data?.voucher?.deliveryOptions[2].deliveryValue);
+        router.push(`/checkout/${bookingId}/success`);
+      }).catch((err) => {
+        console.log(err);
+        router.push(`/checkout/${bookingId}/failed`);
+      });
+    } else {
+      console.log('Stripe Payment Error:', error.message);
+    }
+  };
 
   return (
-    <div className="w-[816px] h-[874px] flex-col justify-center items-center gap-6 inline-flex" id="payment-form" >
+    <div className="container mt-10" id="payment-form">
+      <form onSubmit={handleStripePayment}>
+        <div className="form-row mb-3 bg-white rounded-md border border-zinc-100 p-4">
+          <CardElement
+            options={{
+              style: {
+                base: {
+                  fontSize: '16px',
+                  color: 'black',
+                  '::placeholder': {
+                    color: 'gray-400',
+                  },
+                },
+                invalid: {
+                  color: 'red-500',
+                },
+              },
+            }}
+          />
+        </div>
+
+        <button type='submit' disabled={!stripe} className='bg-red-500 text-white px-4 py-2 rounded-md mt-4'>
+          Pay with Stripe
+        </button>
+      </form>
+
+
+    </div>
+  );
+};
+
+const PaymentDetails = ({ firstName, lastName, email, phone, countryCode, setStep }) => {
+  console.log(firstName, lastName, email, phone, countryCode);
+  return (
+    <div className="w-full pb-6 border-b border-zinc-100 flex-col justify-start items-center gap-6 flex mt-2" id="payment-form" >
       <div className="self-stretch h-[165px] pb-6 border border-zinc-100 flex-col justify-start items-center gap-6 flex">
         <div className="self-stretch h-[141px] flex-col justify-start items-start gap-6 flex">
           <div className="self-stretch justify-between items-center gap-6 inline-flex">
-            <div className="grow shrink basis-0 text-black text-[20px] font-semibold">
+            <div className="grow shrink basis-0 text-black text-[20px] font-semibold p-5">
               Personal Info
             </div>
           </div>
@@ -50,11 +187,10 @@ const PaymentDetails = ({ firstName, setFirstName, lastName, setLastName, email,
               <p className="text-[16px] font-semibold">
                 {countryCode} {phone}
               </p>
-              <div className="grow shrink basis-0 flex-col justify-start items-start gap-3 inline-flex">
-                <p className="text-[16px] font-semibold">
-                  {email}
-                </p>
-              </div>
+              <p className="text-[16px] font-semibold">
+                {email}
+              </p>
+
             </div>
             <div className="text-red-500 text-[16px] font-semibold" onClick={() => setStep(1)}>
               Edit
@@ -62,7 +198,10 @@ const PaymentDetails = ({ firstName, setFirstName, lastName, setLastName, email,
           </div>
         </div>
       </div>
-      <div className="self-stretch h-[599px] pb-6 border border-zinc-100 flex-col justify-start items-center gap-6 flex">
+      <Elements stripe={stripePromise}>
+        <CheckoutForm />
+      </Elements>
+      {/* <div className="self-stretch h-[599px] pb-6 border border-zinc-100 flex-col justify-start items-center gap-6 flex">
         <div className="self-stretch h-[507px] flex-col justify-start items-start gap-6 flex">
           <div className="self-stretch justify-between items-center gap-6 inline-flex">
             <div className="grow shrink basis-0 text-black text-[20px] font-semibold">
@@ -175,11 +314,8 @@ const PaymentDetails = ({ firstName, setFirstName, lastName, setLastName, email,
             </div>
           </div>
         </div>
-        {/* <div className="px-6 py-3.5 bg-red-500 rounded-md justify-center items-center gap-2.5 inline-flexn ext-center text-white capitalize leading-none">
-            Confirm payment
-        </div> */}
 
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -156,6 +156,7 @@ function PackageOptions({ options, isVentrata, item }) {
             object.info = info;
             object.totalPrice = totalPrice;
             object.bookingId = "DEFAULT";
+            object.discount = discount;
             router.push({
                 pathname: "/checkout",
                 query: {
@@ -339,7 +340,7 @@ function PackageOptions({ options, isVentrata, item }) {
                                 <div key={index} className="w-full space-between items-center flex gap-2 md:gap-6">
                                     <div className=" font-semibold leading-relaxed mr-9">{unit.internalName}</div>
                                     <div className="justify-between items-center gap-2 md:gap-6 flex">
-                                        <div className=" font-semibold leading-relaxed">{`${unit.pricingFrom[0].currency} $${unit.pricingFrom[0].net}`}</div>
+                                        <div className=" font-semibold leading-relaxed">{`${unit.pricingFrom[0].currency} $${unit.pricingFrom[0].retail}`}</div>
                                         <div className="justify-between items-center gap-3 flex">
 
                                             <div
@@ -349,7 +350,7 @@ function PackageOptions({ options, isVentrata, item }) {
                                                             id: unit.id,
                                                             quantity: 0,
                                                         },
-                                                        unit.pricingFrom[0].net
+                                                        unit.pricingFrom[0].retail
                                                     )
                                                 }
                                             >
@@ -366,7 +367,7 @@ function PackageOptions({ options, isVentrata, item }) {
                                                             id: unit.id,
                                                             quantity: 1,
                                                         },
-                                                        unit.pricingFrom[0].net
+                                                        unit.pricingFrom[0].retail
                                                     )
                                                 }
                                             >

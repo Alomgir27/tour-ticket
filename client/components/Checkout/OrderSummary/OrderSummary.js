@@ -12,8 +12,8 @@ const OrderSummary = ({ product, data, isVentrata }) => {
                 <div className="self-stretch  p-[15px] bg-white rounded-2xl flex-col justify-start items-center gap-[38px] flex min-w-[416px]">
                     <div className="self-stretch flex-col justify-center items-start gap-2.5 flex">
                         <div className="self-stretch justify-between items-center gap-3 inline-flex">
-                            {isVentrata && product?.bannerImageUrl && (
-                                <img className="w-full h-[100px] rounded-2xl object-cover object-center flex-shrink-0" src={product.bannerImageUrl || "/assets/placeholder.png"}
+                            {isVentrata && product?.option?.coverImageUrl && (
+                                <img className="w-full h-[100px] rounded-2xl object-cover object-center flex-shrink-0" src={product.option?.coverImageUrl || "/assets/placeholder.png"}
                                     alt="product" />
                             )}
                             {!isVentrata && product?.images && (
@@ -33,10 +33,22 @@ const OrderSummary = ({ product, data, isVentrata }) => {
                                     </div>
                                 </div>
                             ))}
-                            <div className="self-stretch justify-center items-center gap-3 inline-flex border-t border-zinc-100">
-                                <div className="w-5 h-5 relative" />
-                                <div className="grow shrink basis-0  text-[14px] font-medium capitalize text-slate-800 mt-5">
-                                    {moment(data?.id).format("DD MMM YYYY")} at {moment(data?.id).format("hh:mm a")}
+                            <div className="self-stretch justify-between items-center gap-3 inline-flex">
+                                <div className=" text-[16px] font-semibold capitalize">Total</div>
+                                <div className="flex-col justify-center items-end gap-2.5 inline-flex">
+                                    <div className=" text-[16px] font-semibold capitalize">US$ {data?.totalPrice}</div>
+                                </div>
+                            </div>
+                            <div className="self-stretch justify-between items-center gap-3 inline-flex">
+                                <div className=" text-[16px] font-semibold capitalize">Discount</div>
+                                <div className="flex-col justify-center items-end gap-2.5 inline-flex">
+                                    <div className=" text-[16px] font-semibold capitalize">US$ {data?.discount || 0}</div>
+                                </div>
+                            </div>
+                            <div className="self-stretch justify-between items-center gap-3 inline-flex">
+                                <div className=" text-[16px] font-semibold capitalize">Tax</div>
+                                <div className="flex-col justify-center items-end gap-2.5 inline-flex">
+                                    <div className=" text-[16px] font-semibold capitalize">US$ {product?.pricing?.retail - data?.totalPrice}</div>
                                 </div>
                             </div>
                             {/* <div className=" justify-start items-center gap-2.5 inline-flex">
@@ -49,7 +61,13 @@ const OrderSummary = ({ product, data, isVentrata }) => {
                         <div className="self-stretch justify-between items-center gap-3 inline-flex">
                             <div className=" text-[16px] font-extrabold capitalize">Price</div>
                             <div className="flex-col justify-center items-end gap-2.5 inline-flex">
-                                <div className=" text-[16px] font-extrabold capitalize">US$ {data?.totalPrice}</div>
+                                <div className=" text-[16px] font-extrabold capitalize">US$ {product?.pricing?.retail}</div>
+                            </div>
+                        </div>
+                        <div className="self-stretch justify-center items-center gap-3 inline-flex border-t border-zinc-100">
+                            <div className="w-5 h-5 relative" />
+                            <div className="grow shrink basis-0  text-[14px] font-medium capitalize text-slate-800 mt-5">
+                                {moment(data?.id).format("DD MMM YYYY")} at {moment(data?.id).format("hh:mm a")}
                             </div>
                         </div>
                     </div>

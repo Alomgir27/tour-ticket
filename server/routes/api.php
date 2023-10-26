@@ -12,6 +12,7 @@ use App\Http\Controllers\API\ServiceOverviewController;
 use App\Http\Controllers\API\WhatIncludeController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\EmailController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ImageController;
 use Illuminate\Support\Facades\Route;
@@ -128,6 +129,10 @@ Route::controller(StoreController::class)->group(function () {
     Route::delete('store/{id}', 'destroy');
 });
 
+
+// routes/api.php
+
+Route::post('send-email', [EmailController::class, 'sendEmail']);
 
 // Route::get('createAdmin', function () {
 //     // Use Laravel's route function to create a request to the 'register' route

@@ -10,18 +10,18 @@ import "swiper/css";
 export default function App({ Component, pageProps: { session, ...pageProps } }) {
     return (
         <Provider store={store}>
-                <SessionProvider session={session}>
-                    <Layout>
-                        <NextNProgress
-                            color="#ef4444"
-                            startPosition={0.3}
-                            stopDelayMs={200}
-                            height={3}
-                            showOnShallow={true}
-                        />
-                        <Component {...pageProps} />
-                    </Layout>
-                </SessionProvider>
+            <SessionProvider session={session}>
+                <Layout>
+                    <NextNProgress
+                        color="#ef4444"
+                        startPosition={0.3}
+                        stopDelayMs={200}
+                        height={3}
+                        showOnShallow={true}
+                    />
+                    <Component {...pageProps} />
+                </Layout>
+            </SessionProvider>
         </Provider>
     );
 }
