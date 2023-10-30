@@ -4,13 +4,16 @@
 @tailwind utilities;
 
 @layer components {
+
   /* flex style */
   .flex-i-center {
     @apply flex items-center;
   }
+
   .flex-j-center {
     @apply flex justify-center;
   }
+
   .flex-center {
     @apply flex-i-center justify-center;
   }
@@ -18,6 +21,7 @@
   .flex-center-start {
     @apply flex-i-center;
   }
+
   .flex-center-between {
     @apply flex-i-center justify-between;
   }
@@ -41,9 +45,11 @@
   .flex-col-i-center {
     @apply flex-column items-center;
   }
+
   .flex-col-j-center {
     @apply flex-column justify-center;
   }
+
   .flex-col-center {
     @apply flex-col-i-center justify-center;
   }
