@@ -4,14 +4,14 @@ import Link from "next/link";
 import AdminLayout from "../../layout/AdminLayout/AdminLayout";
 import Pagination from "../../components/Pagination/Pagination";
 import { useSelector } from "react-redux";
-import ServiceDetailsService from "../../../App/Services/ServiceDetails/ServiceDetailsService";
+// import ServiceDetailsService from "../../../App/Services/ServiceDetails/ServiceDetailsService";
 import ServiceDetailsList from "../../components/ListComponent/ServiceDetailsList";
 
 const ServiceDetails = () => {
   const services = useSelector((state) => state.services.data);
-  useEffect(() => {
-    ServiceDetailsService.getList();
-  }, []);
+  // useEffect(() => {
+  //   ServiceDetailsService.getList();
+  // }, []);
 
   return (
     <AdminLayout>
