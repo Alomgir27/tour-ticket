@@ -305,18 +305,18 @@ const services = () => {
                     )}
                     <div className="grid grid-cols-4 gap-6 max-xs:grid-cols-1 max-xs:gap-4 grid-cols-service-cards mb-2">
                         {venTraTaProducts && venTraTaProducts?.slice(0, showAll ? venTraTaProducts?.length : 8).map((item, index) => {
-                            const netPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].net;
-                            const retailPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
-                            const discount = Math.round(((retailPrice - netPrice) / retailPrice) * 100);
+                            const orginalPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].original;
+                            const actualPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
+                            const discountPrice = Math.round(((orginalPrice - actualPrice) / orginalPrice) * 100);
                             return (
                                 <CategoryCard
-                                    key={item.internalName}
+                                    key={item.id}
                                     link={`/services/${item?.id}`}
                                     img={item?.coverImageUrl ? item?.coverImageUrl : item?.bannerImageUrl ? item?.bannerImageUrl : item?.galleryImages?.[0]?.url ?? ""}
                                     title={item?.title}
-                                    price={retailPrice}
-                                    actual_price={netPrice}
-                                    discount={Math.abs(discount)}
+                                    price={orginalPrice}
+                                    actual_price={actualPrice}
+                                    discount={discountPrice}
                                     tags={item?.subtitle}
                                 />
                             );

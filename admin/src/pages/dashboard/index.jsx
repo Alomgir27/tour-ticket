@@ -28,7 +28,7 @@ import {
   Tooltip,
 } from "chart.js";
 import {
- 
+
   faFacebookF,
   faLinkedinIn,
   faTwitter,
@@ -40,6 +40,10 @@ import Link from "next/link";
 import AdminLayout from "../../layout/AdminLayout/AdminLayout";
 import DashboardList from "../../components/ListComponent/DashboardList";
 import Pagination from "../../components/Pagination/Pagination";
+import moment from "moment";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
 
 Chart.register(
   CategoryScale,
@@ -53,47 +57,54 @@ Chart.register(
 
 const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
-const Home = (props) => {
-  const { pokemonResource, page, perPage, sort, order } = props;
+export const getServerSideProps = async () => {
+  const bookings = await axios.get(`${process.env.VENTRATA_API}/bookings`, {
+    params: {
+      page: 1,
+      perPage: 10,
+      sort: "createdAt",
+      order: "DESC",
+      resellerReference: process.env.NEXT_PUBLIC_STRIPE_RESLLER_REFERENCE,
+      localDateStart: new Date().toISOString(),
+    },
+    headers: {
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_VENTRATA_API_KEY}`,
+      'Octo-Capabilities': process.env.NEXT_PUBLIC_VENTRATA_CAPABILITIES,
+      'Accept': 'application/json',
+    },
+  });
 
-  const detectMorningOrEvening = () => {
-    const currentTime = new Date();
-    const currentHour = currentTime.getHours();
-    let isMorning;
-
-    if (currentHour >= 0 && currentHour < 12) {
-      isMorning = true;
-    } else if (currentHour >= 12 && currentHour < 24) {
-      isMorning = false;
-    } else {
-      return "Invalid time";
-    }
-
-    return isMorning ? "Good Morning" : "Good Evening";
+  return {
+    props: {
+      bookings: bookings.data,
+    },
   };
+};
+
+
+const Home = (props) => {
+  const { bookings } = props;
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const userToken = localStorage.getItem("authToken");
+    if (!userToken) {
+      router.push("/login");
+    }
+  }, []);
 
   return (
     <>
-      <Head>
-        <title>Home</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
       <AdminLayout>
         <div className="">
           <div className="d-flex align-items-center h-full">
             <h3 className="MuiTypography-root MuiTypography-h3 css-13mnwxl">
-              {detectMorningOrEvening()}
-            </h3>
-            <h3 className="MuiTypography-root MuiTypography-h3 css-13mnwxl">
-              , Moses Aboyinga
+              {" "} Welcome to your Dashboard {" "} <span className="MuiTypography-root MuiTypography-h3 css-13mnwxl"> {moment().format('dddd, MMMM Do YYYY')} </span>
             </h3>
           </div>
-          <p className="MuiTypography-root MuiTypography-body1 css-95k3l0">
-            Your Performance Metrices this week
-          </p>
         </div>
-        <div className="row">
+        {/* <div className="row">
           <div className="col-sm-6 col-lg-3">
             <Link href={"/pending-loan"}>
               <Card bg="primary" text="white" className="mb-4">
@@ -491,22 +502,22 @@ const Home = (props) => {
               </Card>
             </Link>
           </div>
-        </div>
+        </div> */}
 
         <div className="col-sm-12 col-lg-12 mb-4">
           <Card text="dark" className="mb-4">
             <Card.Header className="d-flex justify-content-between">
               <Card.Title as="h6">
-                <b>Repayments Due This Week</b>
+                <b>Booking Confirm List</b>
               </Card.Title>
             </Card.Header>
             <Card.Body>
-              <DashboardList />
+              <DashboardList bookings={bookings} />
               <Pagination meta={''} />
             </Card.Body>
           </Card>
         </div>
-        <Card className="mb-4">
+        {/* <Card className="mb-4">
           <Card.Body>
             <div className="d-flex justify-content-between">
               <div>
@@ -707,9 +718,9 @@ const Home = (props) => {
               </div>
             </div>
           </Card.Footer>
-        </Card>
+        </Card> */}
 
-        <div className="row">
+        {/* <div className="row">
           <div className="col-sm-6 col-lg-4">
             <Card className="mb-4" style={{ "--bs-card-cap-bg": "#3b5998" }}>
               <Card.Header className="d-flex justify-content-center align-items-center">
@@ -799,9 +810,9 @@ const Home = (props) => {
               </Card.Body>
             </Card>
           </div>
-        </div>
+        </div> */}
 
-        <div className="row">
+        {/* <div className="row">
           <div className="col-md-12">
             <Card>
               <Card.Header>Traffic &amp; Sales</Card.Header>
@@ -1100,7 +1111,7 @@ const Home = (props) => {
               </Card.Body>
             </Card>
           </div>
-        </div>
+        </div> */}
       </AdminLayout>
     </>
   );

@@ -89,9 +89,11 @@ const index = ({ serviceData, isVentrata }) => {
     const router = useRouter();
     const [selectedImage, setSelectedImage] = useState(null);
 
-    const netPrice = serviceData?.options?.[0]?.units?.[0]?.pricingFrom?.[0].net;
-    const retailPrice = serviceData?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
-    const discount = isVentrata ? Math.round(((retailPrice - netPrice) / retailPrice) * 100) : parseFloat(serviceData?.discount);
+    const orginalPrice = serviceData?.options?.[0]?.units?.[0]?.pricingFrom?.[0].original;
+    const actualPrice = serviceData?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
+    const discountPrice = Math.round(((orginalPrice - actualPrice) / orginalPrice) * 100);
+    const discount = isVentrata ? discountPrice : parseFloat(serviceData?.discount);
+
 
     const { products } = useSelector((state) => state.products);
     const { localProducts } = useSelector((state) => state.products);
@@ -176,7 +178,6 @@ const index = ({ serviceData, isVentrata }) => {
                                                 className="w-full"
                                             />
                                         )}
-                                        {console.log("selectedImage", selectedImage)}
                                     </div>
                                     <div className="flex items-center gap-3">
                                         {/* TODO: Image thumbs for service details */}
@@ -323,8 +324,8 @@ const index = ({ serviceData, isVentrata }) => {
                         </div>
                         <div className=" mt-10 lg:mt-[10.5rem] mx-auto">
                             <CheckAvailabilityCard
-                                price={isVentrata ? retailPrice : price}
-                                actual_price={isVentrata ? netPrice : actual_price}
+                                price={isVentrata ? orginalPrice : price}
+                                actual_price={isVentrata ? actualPrice : actual_price}
                                 discount={discount}
                             />
                         </div>
@@ -335,9 +336,10 @@ const index = ({ serviceData, isVentrata }) => {
                     {/* TODO: ENABLE RANDOM SERVICE */}
                     <div className="grid grid-cols-4 gap-6 max-xs:grid-cols-1 max-xs:gap-4 grid-cols-service-cards">
                         {products?.slice(0, 4).map((item, index) => {
-                            const netPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].net;
-                            const retailPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
-                            const discount = Math.round(((retailPrice - netPrice) / retailPrice) * 100);
+
+                            const orginalPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].original;
+                            const actualPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
+                            const discountPrice = Math.round(((orginalPrice - actualPrice) / orginalPrice) * 100);
 
                             return (
                                 <CategoryCard
@@ -345,9 +347,9 @@ const index = ({ serviceData, isVentrata }) => {
                                     link={`/services/${item?.id}`}
                                     img={item?.coverImageUrl ? item?.coverImageUrl : item?.bannerImageUrl ? item?.bannerImageUrl : item?.galleryImages?.[0]?.url ?? ""}
                                     title={item?.title}
-                                    price={retailPrice}
-                                    actual_price={netPrice}
-                                    discount={Math.abs(discount)}
+                                    price={actualPrice}
+                                    actual_price={orginalPrice}
+                                    discount={discountPrice}
                                     tags={item?.subtitle}
                                 />
                             );

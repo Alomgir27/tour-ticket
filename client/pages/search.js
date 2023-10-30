@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 //data
-import {useGetCategories} from "@/App/Repositories/Categories/GetCategories";
-import { fetchData, fetchVendraData  } from "@/App/Repositories/Services/GetServices";
+import { useGetCategories } from "@/App/Repositories/Categories/GetCategories";
+import { fetchData, fetchVendraData } from "@/App/Repositories/Services/GetServices";
 import { fetchBlogs } from "@/App/Repositories/Blogs/GetBlogs";
 
 //components
@@ -102,7 +102,7 @@ function search() {
 
 
     useEffect(() => {
-        if((startHour && endHour && startHour > endHour) || (startDate && endDate && startDate > endDate)) {
+        if ((startHour && endHour && startHour > endHour) || (startDate && endDate && startDate > endDate)) {
             return;
         }
         const params = {
@@ -120,11 +120,11 @@ function search() {
             page: page,
         };
         const queryString = Object.keys(params).map((key) => key + '=' + params[key]).join('&');
-         router.push(`/search?${queryString}`);
+        router.push(`/search?${queryString}`);
     }, [category, destinationId, categoryId, startDate, endDate, sort, startHour, endHour, lowerPrice, higherPrice, page]);
 
     useEffect(() => {
-        if(router.query?.search) {
+        if (router.query?.search) {
             setSearch(router.query?.search);
         }
     }, [router.query?.search]);
@@ -134,7 +134,7 @@ function search() {
         if (categoryData) {
             let destinationList = [];
             categoryData?.map((item) => {
-                 destinationList = [...destinationList, ...item?.destinations];
+                destinationList = [...destinationList, ...item?.destinations];
             });
             setDestinationList(destinationList);
         }
@@ -158,7 +158,7 @@ function search() {
 
 
     useEffect(() => {
-        if(!destinationId) {
+        if (!destinationId) {
             setCategoryId("");
             setCategory("");
         }
@@ -237,7 +237,7 @@ function search() {
                             <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
                                 {/* <!-- Filters --> */}
                                 <div className="w-full max-w-xs lg:col-span-1 lg:max-w-none">
-                                <div className="mb-4">
+                                    <div className="mb-4">
                                         <TextInput
                                             label="Search"
                                             name="search"
@@ -248,25 +248,25 @@ function search() {
                                             type="text"
                                         />
                                     </div>
-                                
+
                                     <div className="mb-4">
-                                        <DestinationsComponent 
-                                        items={destinationList} 
-                                        selected={destinationId} 
-                                        setSelected={handleDestination}
+                                        <DestinationsComponent
+                                            items={destinationList}
+                                            selected={destinationId}
+                                            setSelected={handleDestination}
                                         />
                                     </div>
 
                                     {destinationId && (
                                         <div className="mb-4">
-                                            <FilterComponent 
-                                            items={categoryList?.map((item) => ({ id: item?.id, name: item?.title }))} 
-                                            selected={categoryId} 
-                                            setSelected={handleCategory} 
+                                            <FilterComponent
+                                                items={categoryList?.map((item) => ({ id: item?.id, name: item?.title }))}
+                                                selected={categoryId}
+                                                setSelected={handleCategory}
                                             />
                                         </div>
                                     )}
-                                    
+
 
                                     <div className="mb-4">
                                         <DatePicker
@@ -336,7 +336,7 @@ function search() {
                                 <div className="lg:col-span-3">
                                     <div className="w-full border-b border-zinc-100 pb-5  mt-[34px] justify-between items-center gap-6 flex flex-col md:flex-row">
                                         <div className="basis-full flex flex-col gap-4">
-                                           {serviceList?.map((item) => (
+                                            {serviceList?.map((item) => (
                                                 <SearchCard
                                                     key={item?.id}
                                                     id={item?.id}
@@ -352,9 +352,9 @@ function search() {
                                                 />
                                             ))}
                                             {venTraTaProducts?.map((item) => {
-                                                 const netPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].net;
-                                                 const retailPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
-                                                 const discount = Math.round(((retailPrice - netPrice) / retailPrice) * 100);
+                                                const orginalPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].original;
+                                                const actualPrice = item?.options?.[0]?.units?.[0]?.pricingFrom?.[0].retail;
+                                                const discountPrice = Math.round(((orginalPrice - actualPrice) / orginalPrice) * 100);
 
                                                 return (
                                                     <SearchCard
@@ -363,9 +363,9 @@ function search() {
                                                         title={item?.title}
                                                         tags={item?.internalName}
                                                         description={item?.shortDescription}
-                                                        price={retailPrice}
-                                                        actual_price={netPrice}
-                                                        discount={Math.abs(discount)}
+                                                        price={orginalPrice}
+                                                        actual_price={actualPrice}
+                                                        discount={discountPrice}
                                                         image={item?.coverImageUrl ? item?.coverImageUrl : item?.bannerImageUrl ? item?.bannerImageUrl : item?.galleryImages?.[0]?.url ?? ""}
                                                         category={item?.category || item?.subtitle}
                                                         highlight={item?.highlights[0]}
@@ -387,7 +387,7 @@ function search() {
                 </div>
             </Container>
             <div className="flex flex-col gap-[100px]">
-              <TopPlace topBlogs={blogs} />
+                <TopPlace topBlogs={blogs} />
             </div>
         </div>
     );

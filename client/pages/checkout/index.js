@@ -9,19 +9,21 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { ApiAuth, ApiBase, Capabilities } from "@/Helper/ApiBase";
 import { ApiBaseMysql } from "@/Helper/ApiBase";
+import { useSession } from "next-auth/react";
 
 
 
 
 const checkout = () => {
     const router = useRouter();
+    const { data: session, status } = useSession();
     const [object, setObject] = useState({});
 
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
-    const [countryCode, setCountryCode] = useState('+39');
+    const [countryCode, setCountryCode] = useState('');
 
     const [product, setProduct] = useState({});
 
@@ -122,6 +124,19 @@ const checkout = () => {
                 console.error('Error fetching country codes:', error);
             });
     }, []);
+
+
+    useEffect(() => {
+        if (status === "loading") return;
+        if (session) {
+            setFirstName(session?.user?.name?.split(" ")[0]);
+            setLastName(session?.user?.name?.split(" ")[1]);
+            setEmail(session?.user?.email);
+        }
+
+    }, [status]);
+
+
 
 
 

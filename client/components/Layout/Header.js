@@ -34,6 +34,11 @@ function Header() {
                             <Link href={"/sales_point#"}>
                                 <li className="max-lg:min-w-fit">Sales Point</li>
                             </Link>
+                            {session && status === "authenticated" && (
+                                <Link href={"/dashboard"}>
+                                    <li className="max-lg:min-w-fit">Dashboard</li>
+                                </Link>
+                            )}
                         </ul>
                         <div
                             className={`${router.pathname != "/" ? "gap-6" : "lg:gap-[45px] max-lg:gap-[14px]"
@@ -41,8 +46,8 @@ function Header() {
                         >
                             <div
                                 className={`flex-i-center gap-6 max-lg:gap-[14px] ${router.pathname != "/"
-                                        ? "bg-rose-50 h-[38px] justify-center w-[136px] rounded-lg"
-                                        : ""
+                                    ? "bg-rose-50 h-[38px] justify-center w-[136px] rounded-lg"
+                                    : ""
                                     }`}
                             >
                                 {router.pathname != "/" && (

@@ -39,7 +39,7 @@ export default function AdminLayout({ children }) {
     if (localStorage.getItem("isShowSidebarMd")) {
       setIsShowSidebarMd(localStorage.getItem("isShowSidebarMd") === "true");
     }
-  }, [setIsShowSidebarMd]);
+  }, []);
 
   return (
     <>

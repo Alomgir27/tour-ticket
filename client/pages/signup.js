@@ -29,7 +29,10 @@ const Signup = () => {
       signIn('credentials', {
         email: formData.email,
         password: formData.password,
-      });
+      })
+        .then((res) => {
+          console.log(res);
+        })
     } else {
       setLoading(false);
     }
@@ -39,7 +42,7 @@ const Signup = () => {
     return null;
   }
 
-  if(loading) return <Loading />
+  if (loading) return <Loading />
 
 
 
@@ -51,22 +54,22 @@ const Signup = () => {
         <div>
           <h2 className="mt-6 text-center text-xl font-semibold text-gray-900">Create your account</h2>
         </div>
-         {/* Google Sign-in Button */}
-         <div className="text-center mt-4">
-            <button
-                onClick={() => signIn('google')}
-                className="group relative w-full flex justify-center py-2 px-4 border text-sm font-medium rounded-md text-black bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-400 hover:shadow-md transition duration-300 ease-in-out block"
-            >
-               <div className="flex justify-between items-center w-full">
-                    <div className="flex items-center">
-                        <GoogleSvg />
-                        <span className="ml-2">Continue with Google</span>
-                     </div>
-                      <div className="flex items-center">
-                        <HiArrowLongRight className="text-xl" />
-                      </div>
-                </div>
-            </button>
+        {/* Google Sign-in Button */}
+        <div className="text-center mt-4">
+          <button
+            onClick={() => signIn('google')}
+            className="group relative w-full flex justify-center py-2 px-4 border text-sm font-medium rounded-md text-black bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-400 hover:shadow-md transition duration-300 ease-in-out block"
+          >
+            <div className="flex justify-between items-center w-full">
+              <div className="flex items-center">
+                <GoogleSvg />
+                <span className="ml-2">Continue with Google</span>
+              </div>
+              <div className="flex items-center">
+                <HiArrowLongRight className="text-xl" />
+              </div>
+            </div>
+          </button>
 
 
 
@@ -75,7 +78,7 @@ const Signup = () => {
         <form className="mt-8 space-y-6 card-body" action="#" method="POST" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm -space-y-px space-y-4">
-           <div className="mb-4">
+            <div className="mb-4">
               <label htmlFor="name" className="text-sm text-gray-900 mb-1 block font-semibold text-left w-full">
                 Name
               </label>
@@ -162,12 +165,12 @@ const Signup = () => {
           </div>
           <div className="mt-4">
             <p className="text-center text-sm text-gray-900">
-                Already have an account?{' '}
-                <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-                    Log in
-                </a>
+              Already have an account?{' '}
+              <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Log in
+              </a>
             </p>
-            </div>
+          </div>
         </form>
       </div>
     </div>

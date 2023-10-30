@@ -3,10 +3,11 @@ import { useSession, signIn } from 'next-auth/react';
 import GoogleSvg from '@/components/Svg/GoogleSvg';
 import { HiArrowLongRight } from 'react-icons/hi2';
 import { AuthRepo } from '@/App/Repositories/Auth/AuthRepo';
-import Loading from '@/components/Utils/Loading';
+
+
 const Login = () => {
-  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -23,45 +24,58 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     const res = await AuthRepo.login(formData);
-    if (res.status === 200) {
+    if (res?.status === 200) {
       signIn('credentials', {
         email: formData.email,
         password: formData.password,
-      });
+      })
+        .then((res) => {
+          console.log(res);
+          localStorage.setItem('user', JSON.stringify(res));
+        })
     } else {
       setLoading(false);
+      setError(res?.data?.message);
+      console.log(res);
     }
   }
 
-  if (session) {
-    return null;
-  }
+  if (error) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-orange-50 to-orange-100">
+      <p className="text-center text-xl font-semibold text-gray-900">{error}</p>
+    </div>
+  )
 
-  if(loading) return <Loading />
 
-   
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-orange-50 to-orange-100">
+      <p className="text-center text-xl font-semibold text-gray-900">Logging in...</p>
+    </div>
+  )
+
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-orange-50 to-orange-100">
       <div className="card p-4 shadow-lg rounded-lg bg-white border border-gray-200 w-full max-w-md space-y-8 bg-gradient-to-b from-orange-50 to-orange-100/0">
         <div>
           <h2 className="mt-6 text-center text-xl font-semibold text-gray-900">Log in to your account</h2>
         </div>
-         {/* Google Sign-in Button */}
-         <div className="text-center mt-4">
-            <button
-                onClick={() => signIn('google')}
-                className="group relative w-full flex justify-center py-2 px-4 border text-sm font-medium rounded-md text-black bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-400 hover:shadow-md transition duration-300 ease-in-out block"
-            >
-               <div className="flex justify-between items-center w-full">
-                    <div className="flex items-center">
-                        <GoogleSvg />
-                        <span className="ml-2">Sign in with Google</span>
-                     </div>
-                      <div className="flex items-center">
-                        <HiArrowLongRight className="text-xl" />
-                      </div>
-                </div>
-            </button>
+        {/* Google Sign-in Button */}
+        <div className="text-center mt-4">
+          <button
+            onClick={() => signIn('google')}
+            className="group relative w-full flex justify-center py-2 px-4 border text-sm font-medium rounded-md text-black bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 border border-gray-300 hover:border-gray-400 hover:shadow-md transition duration-300 ease-in-out block"
+          >
+            <div className="flex justify-between items-center w-full">
+              <div className="flex items-center">
+                <GoogleSvg />
+                <span className="ml-2">Sign in with Google</span>
+              </div>
+              <div className="flex items-center">
+                <HiArrowLongRight className="text-xl" />
+              </div>
+            </div>
+          </button>
         </div>
         <form className="mt-8 space-y-6 card-body" action="#" method="POST" onSubmit={handleSubmit}>
           <input type="hidden" name="remember" defaultValue="true" />
@@ -128,12 +142,12 @@ const Login = () => {
           </div>
           <div className="mt-4">
             <p className="text-center text-sm text-gray-900">
-                Don't have an account?{' '} 
-                <a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
-                    Sign up
-                </a>
+              Don't have an account?{' '}
+              <a href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Sign up
+              </a>
             </p>
-            </div>
+          </div>
         </form>
       </div>
     </div>

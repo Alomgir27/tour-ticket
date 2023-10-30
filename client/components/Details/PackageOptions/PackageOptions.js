@@ -19,7 +19,6 @@ function PackageOptions({ options, isVentrata, item }) {
     const [availability, setAvailability] = useState([]);
     const [selectedItem, setSelectedItem] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
-    const { units } = options?.length > 0 ? options[0] : [];
     let router = useRouter();
     const [dateOptions, setDateOptions] = useState([]);
     const [showMoreDateStart, setShowMoreDateStart] = useState(false);
@@ -53,11 +52,11 @@ function PackageOptions({ options, isVentrata, item }) {
 
 
     const handleAddItem = (item, price) => {
-        const existingItem = selectedItem.find((x) => x.id === item.id);
+        const existingItem = selectedItem.find((x) => x.unitId === item.unitId);
         if (existingItem) {
             setSelectedItem(
                 selectedItem.map((x) => {
-                    if (x.id === item.id) {
+                    if (x.unitId === item.unitId) {
                         return { ...x, quantity: x.quantity + 1 };
                     } else {
                         return x;
@@ -71,12 +70,12 @@ function PackageOptions({ options, isVentrata, item }) {
         setTotalPrice(totalPrice + price);
     };
     const handleRemoveItem = (item, price) => {
-        const existingItem = selectedItem.find((x) => x.id === item.id);
+        const existingItem = selectedItem.find((x) => x.unitId === item.unitId);
         if (existingItem.quantity == 0) return;
         if (existingItem) {
             setSelectedItem(
                 selectedItem.map((x) => {
-                    if (x.id === item.id) {
+                    if (x.unitId === item.unitId) {
                         return { ...x, quantity: x.quantity - 1 };
                     } else {
                         return x;
@@ -97,7 +96,8 @@ function PackageOptions({ options, isVentrata, item }) {
         productData.append("localDateStart", firstDate);
         productData.append("localDateEnd", lastDate);
         productData.append("units", selectedItem);
-        console.log(JSON.stringify(selectedItem));
+        productData.append("currency", "USD");
+        productData.append("country", "US");
 
         try {
 
@@ -127,6 +127,12 @@ function PackageOptions({ options, isVentrata, item }) {
             optionId: options?.length > 0 ? options[0].id : "DEFAULT",
             availabilityId: selectAvailability.id,
             notes: "Optional notes for the booking",
+            unitItems: [],
+            info: [],
+            totalPrice: 0,
+            bookingId: "DEFAULT",
+            discount: 0,
+            currency: "USD",
         };
 
         let unitItems = [];
@@ -134,7 +140,7 @@ function PackageOptions({ options, isVentrata, item }) {
 
         selectedItem.map((item) => {
             for (let i = 0; i < item.quantity; i++) {
-                unitItems.push({ unitId: item.id });
+                unitItems.push({ unitId: item.unitId });
             }
         });
 
@@ -170,8 +176,8 @@ function PackageOptions({ options, isVentrata, item }) {
         selectedItem.map((item) => {
             info.push({
                 quantity: item.quantity,
-                type: units.find((x) => x.id === item.id).internalName,
-                price: units.find((x) => x.id === item.id).pricingFrom[0].net,
+                type: item.type,
+                price: availability[0]?.unitPricing?.find((x) => x.unitId === item.unitId)?.retail,
             })
         });
 
@@ -329,6 +335,7 @@ function PackageOptions({ options, isVentrata, item }) {
                 </div>
             )} */}
 
+            {console.log(availability)}
 
 
             <div className="w-full p-5 bg-white rounded-lg flex-col justify-start items-start gap-5 flex">
@@ -336,38 +343,40 @@ function PackageOptions({ options, isVentrata, item }) {
                     <div className="flex flex-col justify-start items-start gap-5">
                         <div className="text-lg font-semibold leading-none">Select quantity</div>
                         <div className="  flex flex-col justify-start items-start gap-6 ">
-                            {isVentrata && units?.map((unit, index) => (
+                            {isVentrata && availability[0]?.unitPricing?.map((unit, index) => (
                                 <div key={index} className="w-full space-between items-center flex gap-2 md:gap-6">
-                                    <div className=" font-semibold leading-relaxed mr-9">{unit.internalName}</div>
+                                    <div className=" font-semibold leading-relaxed mr-9">{index == 0 ? "Adult" : index == 1 ? "Child" : index == 2 ? "Senior" : index == 3 ? "Family" : ""}</div>
                                     <div className="justify-between items-center gap-2 md:gap-6 flex">
-                                        <div className=" font-semibold leading-relaxed">{`${unit.pricingFrom[0].currency} $${unit.pricingFrom[0].retail}`}</div>
+                                        <div className=" font-semibold leading-relaxed">{`${unit?.currency} $${unit?.retail}`}</div>
                                         <div className="justify-between items-center gap-3 flex">
 
                                             <div
                                                 onClick={() =>
                                                     handleRemoveItem(
                                                         {
-                                                            id: unit.id,
+                                                            unitId: unit.unitId,
                                                             quantity: 0,
+                                                            type: index == 0 ? "Adult" : index == 1 ? "Child" : index == 2 ? "Senior" : index == 3 ? "Family" : "",
                                                         },
-                                                        unit.pricingFrom[0].retail
+                                                        unit.retail
                                                     )
                                                 }
                                             >
                                                 <ItemCutSvg />
                                             </div>
                                             <div className="text-center">
-                                                {selectedItem.find((x) => x.id === unit.id)
+                                                {selectedItem.find((x) => x.unitId === unit.unitId)
                                                     ?.quantity ?? 0}
                                             </div>
                                             <div
                                                 onClick={() =>
                                                     handleAddItem(
                                                         {
-                                                            id: unit.id,
+                                                            unitId: unit.unitId,
                                                             quantity: 1,
+                                                            type: index == 0 ? "Adult" : index == 1 ? "Child" : index == 2 ? "Senior" : index == 3 ? "Family" : "",
                                                         },
-                                                        unit.pricingFrom[0].retail
+                                                        unit.retail
                                                     )
                                                 }
                                             >
